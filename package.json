@@ -1,0 +1,16 @@
+{
+  "name": "vehicle-job-card-management",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "npm@11.19.0",
+  "scripts": {
+    "setup": "bash dependencies/install.sh",
+    "db:setup": "bash scripts/setup-db.sh",
+    "db:start": "bash scripts/start-mysql.sh",
+    "db:stop": "bash scripts/stop-mysql.sh",
+    "api": "bash -c '. scripts/env.sh && mvn -f backend/pom.xml spring-boot:run'",
+    "api:build": "bash -c '. scripts/env.sh && mvn -f backend/pom.xml -DskipTests package'",
+    "web": "npm --prefix frontend start -- --host 127.0.0.1",
+    "web:build": "npm --prefix frontend run build"
+  }
+}

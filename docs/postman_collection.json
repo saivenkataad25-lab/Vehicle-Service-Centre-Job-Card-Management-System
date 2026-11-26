@@ -1,0 +1,314 @@
+{
+  "info": {
+    "name": "Vehicle Service Centre Job Card API",
+    "description": "Postman collection for the Spring Boot API. Set baseUrl to http://localhost:8080/api and run folders in order.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api" },
+    { "key": "customerId", "value": "1" },
+    { "key": "vehicleId", "value": "1" },
+    { "key": "technicianId", "value": "1" },
+    { "key": "unavailableTechnicianId", "value": "2" },
+    { "key": "bookingId", "value": "1" },
+    { "key": "jobCardId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "GET all customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/customers?search=", "host": ["{{baseUrl}}"], "path": ["customers"], "query": [{ "key": "search", "value": "" }] }
+          }
+        },
+        {
+          "name": "POST create customer",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('created', function () { pm.response.to.have.status(201); });",
+                "if (pm.response.code === 201) pm.collectionVariables.set('customerId', pm.response.json().id);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerCode\": \"CUST-0004\",\n  \"fullName\": \"Diana Njoroge\",\n  \"phone\": \"0712345004\",\n  \"email\": \"diana@example.com\",\n  \"address\": \"9 Lake Road, Nairobi\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/customers", "host": ["{{baseUrl}}"], "path": ["customers"] }
+          }
+        },
+        {
+          "name": "GET customer by id",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/customers/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["customers", "{{customerId}}"] } }
+        },
+        {
+          "name": "PUT update customer",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerCode\": \"CUST-0004\",\n  \"fullName\": \"Diana Njoroge\",\n  \"phone\": \"0712345004\",\n  \"email\": \"diana@example.com\",\n  \"address\": \"10 Lake Road, Nairobi\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/customers/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["customers", "{{customerId}}"] }
+          }
+        },
+        {
+          "name": "DELETE customer (409 when linked)",
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/customers/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["customers", "{{customerId}}"] } }
+        }
+      ]
+    },
+    {
+      "name": "Vehicles",
+      "item": [
+        {
+          "name": "GET all vehicles",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/vehicles?customerId=&search=", "host": ["{{baseUrl}}"], "path": ["vehicles"], "query": [{ "key": "customerId", "value": "" }, { "key": "search", "value": "" }] } }
+        },
+        {
+          "name": "POST create vehicle",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('created', function () { pm.response.to.have.status(201); });",
+                "if (pm.response.code === 201) pm.collectionVariables.set('vehicleId', pm.response.json().id);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"registrationNumber\": \"KAF-111A\",\n  \"make\": \"Toyota\",\n  \"model\": \"Vitz\",\n  \"year\": 2022,\n  \"fuelType\": \"PETROL\",\n  \"customerId\": {{customerId}},\n  \"odometerReading\": 12000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/vehicles", "host": ["{{baseUrl}}"], "path": ["vehicles"] }
+          }
+        },
+        {
+          "name": "GET vehicle by id",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/vehicles/{{vehicleId}}", "host": ["{{baseUrl}}"], "path": ["vehicles", "{{vehicleId}}"] } }
+        },
+        {
+          "name": "PUT update vehicle",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"registrationNumber\": \"KAF-111A\",\n  \"make\": \"Toyota\",\n  \"model\": \"Vitz\",\n  \"year\": 2022,\n  \"fuelType\": \"PETROL\",\n  \"customerId\": {{customerId}},\n  \"odometerReading\": 12500\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/vehicles/{{vehicleId}}", "host": ["{{baseUrl}}"], "path": ["vehicles", "{{vehicleId}}"] }
+          }
+        },
+        {
+          "name": "DELETE vehicle (409 when linked)",
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/vehicles/{{vehicleId}}", "host": ["{{baseUrl}}"], "path": ["vehicles", "{{vehicleId}}"] } }
+        }
+      ]
+    },
+    {
+      "name": "Technicians",
+      "item": [
+        {
+          "name": "GET all technicians",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/technicians?availabilityStatus=AVAILABLE", "host": ["{{baseUrl}}"], "path": ["technicians"], "query": [{ "key": "availabilityStatus", "value": "AVAILABLE" }] } }
+        },
+        {
+          "name": "POST create technician",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('created', function () { pm.response.to.have.status(201); });",
+                "if (pm.response.code === 201) pm.collectionVariables.set('technicianId', pm.response.json().id);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"technicianCode\": \"TECH-004\",\n  \"fullName\": \"Peter Kamau\",\n  \"skillArea\": \"Tyres and alignment\",\n  \"phone\": \"0722001004\",\n  \"availabilityStatus\": \"AVAILABLE\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/technicians", "host": ["{{baseUrl}}"], "path": ["technicians"] }
+          }
+        },
+        {
+          "name": "GET technician by id",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/technicians/{{technicianId}}", "host": ["{{baseUrl}}"], "path": ["technicians", "{{technicianId}}"] } }
+        },
+        {
+          "name": "PUT update technician",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"technicianCode\": \"TECH-004\",\n  \"fullName\": \"Peter Kamau\",\n  \"skillArea\": \"Brakes\",\n  \"phone\": \"0722001004\",\n  \"availabilityStatus\": \"AVAILABLE\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/technicians/{{technicianId}}", "host": ["{{baseUrl}}"], "path": ["technicians", "{{technicianId}}"] }
+          }
+        },
+        {
+          "name": "DELETE technician (409 when assigned)",
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/technicians/{{technicianId}}", "host": ["{{baseUrl}}"], "path": ["technicians", "{{technicianId}}"] } }
+        }
+      ]
+    },
+    {
+      "name": "Service bookings",
+      "item": [
+        {
+          "name": "GET all bookings",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/service-bookings?status=CONFIRMED", "host": ["{{baseUrl}}"], "path": ["service-bookings"], "query": [{ "key": "status", "value": "CONFIRMED" }] } }
+        },
+        {
+          "name": "POST create confirmed booking",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('created', function () { pm.response.to.have.status(201); });",
+                "if (pm.response.code === 201) pm.collectionVariables.set('bookingId', pm.response.json().id);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingNumber\": \"BK-2026-0900\",\n  \"vehicleId\": {{vehicleId}},\n  \"bookingDate\": \"2026-11-26\",\n  \"preferredDate\": \"2026-12-03\",\n  \"complaint\": \"Routine service\",\n  \"bookingStatus\": \"CONFIRMED\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/service-bookings", "host": ["{{baseUrl}}"], "path": ["service-bookings"] }
+          }
+        },
+        {
+          "name": "GET booking by id",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/service-bookings/{{bookingId}}", "host": ["{{baseUrl}}"], "path": ["service-bookings", "{{bookingId}}"] } }
+        },
+        {
+          "name": "PUT update booking",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingNumber\": \"BK-2026-0900\",\n  \"vehicleId\": {{vehicleId}},\n  \"bookingDate\": \"2026-11-26\",\n  \"preferredDate\": \"2026-12-04\",\n  \"complaint\": \"Routine service and brake check\",\n  \"bookingStatus\": \"CONFIRMED\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/service-bookings/{{bookingId}}", "host": ["{{baseUrl}}"], "path": ["service-bookings", "{{bookingId}}"] }
+          }
+        },
+        {
+          "name": "POST cancel booking",
+          "request": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/service-bookings/{{bookingId}}/cancel", "host": ["{{baseUrl}}"], "path": ["service-bookings", "{{bookingId}}", "cancel"] } }
+        },
+        {
+          "name": "DELETE booking (409 when converted)",
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/service-bookings/{{bookingId}}", "host": ["{{baseUrl}}"], "path": ["service-bookings", "{{bookingId}}"] } }
+        }
+      ]
+    },
+    {
+      "name": "Job cards",
+      "item": [
+        {
+          "name": "GET all job cards",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/job-cards?status=OPEN&overdue=false", "host": ["{{baseUrl}}"], "path": ["job-cards"], "query": [{ "key": "status", "value": "OPEN" }, { "key": "overdue", "value": "false" }] } }
+        },
+        {
+          "name": "POST create job card from confirmed booking",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('created', function () { pm.response.to.have.status(201); });",
+                "if (pm.response.code === 201) pm.collectionVariables.set('jobCardId', pm.response.json().id);"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingId\": {{bookingId}},\n  \"technicianId\": {{technicianId}},\n  \"openedDate\": \"2026-11-26\",\n  \"promisedDate\": \"2026-12-03\",\n  \"serviceTasks\": [\n    {\n      \"taskName\": \"Oil change\",\n      \"description\": \"Replace engine oil and filter\",\n      \"estimatedHours\": 1.5,\n      \"hourlyRate\": 45.00,\n      \"amount\": 0\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/job-cards", "host": ["{{baseUrl}}"], "path": ["job-cards"] }
+          }
+        },
+        {
+          "name": "GET job card by id",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/job-cards/{{jobCardId}}", "host": ["{{baseUrl}}"], "path": ["job-cards", "{{jobCardId}}"] } }
+        },
+        {
+          "name": "PUT start work",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"technicianId\": {{technicianId}},\n  \"openedDate\": \"2026-11-26\",\n  \"promisedDate\": \"2026-12-03\",\n  \"jobStatus\": \"IN_PROGRESS\",\n  \"completionNotes\": null,\n  \"serviceTasks\": [\n    {\n      \"taskName\": \"Oil change\",\n      \"description\": \"Replace engine oil and filter\",\n      \"estimatedHours\": 1.5,\n      \"hourlyRate\": 45.00,\n      \"amount\": 0\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/job-cards/{{jobCardId}}", "host": ["{{baseUrl}}"], "path": ["job-cards", "{{jobCardId}}"] }
+          }
+        },
+        {
+          "name": "PUT complete work (notes required)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"technicianId\": {{technicianId}},\n  \"openedDate\": \"2026-11-26\",\n  \"promisedDate\": \"2026-12-03\",\n  \"jobStatus\": \"COMPLETED\",\n  \"completionNotes\": \"Oil and filter replaced; test drive completed.\",\n  \"serviceTasks\": [\n    {\n      \"taskName\": \"Oil change\",\n      \"description\": \"Replace engine oil and filter\",\n      \"estimatedHours\": 1.5,\n      \"hourlyRate\": 45.00,\n      \"amount\": 0\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/job-cards/{{jobCardId}}", "host": ["{{baseUrl}}"], "path": ["job-cards", "{{jobCardId}}"] }
+          }
+        },
+        {
+          "name": "DELETE job card (409 when completed)",
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/job-cards/{{jobCardId}}", "host": ["{{baseUrl}}"], "path": ["job-cards", "{{jobCardId}}"] } }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard and reports",
+      "item": [
+        { "name": "GET dashboard summary", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/dashboard/summary", "host": ["{{baseUrl}}"], "path": ["dashboard", "summary"] } } },
+        { "name": "GET job status counts", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/dashboard/job-status-counts", "host": ["{{baseUrl}}"], "path": ["dashboard", "job-status-counts"] } } },
+        { "name": "GET delayed jobs", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/dashboard/delayed-jobs", "host": ["{{baseUrl}}"], "path": ["dashboard", "delayed-jobs"] } } },
+        { "name": "GET upcoming jobs", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/dashboard/upcoming-jobs", "host": ["{{baseUrl}}"], "path": ["dashboard", "upcoming-jobs"] } } },
+        { "name": "GET completed job report", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/reports/completed-job-cards", "host": ["{{baseUrl}}"], "path": ["reports", "completed-job-cards"] } } }
+      ]
+    }
+  ]
+}

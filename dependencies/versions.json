@@ -1,0 +1,25 @@
+{
+  "project": "Vehicle Service Centre Job Card Management System",
+  "versions": {
+    "node": "24.20.0",
+    "npm": "11.19.0",
+    "angularCli": "22.3.0",
+    "java": "21.0.13.1+2",
+    "maven": "3.9.16",
+    "mysql": "8.4.13"
+  },
+  "manifests": {
+    "frontend": "frontend/package.json",
+    "frontendLock": "frontend/package-lock.json",
+    "backend": "backend/pom.xml",
+    "environment": ".env.example"
+  },
+  "installCommand": "bash dependencies/install.sh",
+  "vercel": {
+    "installCommand": "npm --prefix frontend ci",
+    "buildCommand": "npm --prefix frontend run build",
+    "outputDirectory": "frontend/dist/vehicle-job-card/browser",
+    "apiProxy": "api/[...path].js",
+    "requiredEnvironmentVariable": "BACKEND_URL"
+  }
+}

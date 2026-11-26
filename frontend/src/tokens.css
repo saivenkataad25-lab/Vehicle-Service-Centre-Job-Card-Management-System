@@ -1,0 +1,70 @@
+:root {
+  color-scheme: dark;
+
+  --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px; --space-lg: 24px; --space-xl: 32px; --space-2xl: 48px; --space-3xl: 64px; --space-4xl: 96px;
+  --text-xs: 0.75rem; --text-sm: 0.875rem; --text-md: 1rem; --text-lg: 1.125rem; --text-xl: 1.266rem; --text-2xl: 1.424rem; --text-3xl: 1.602rem;
+  --text-display-s: 1.266rem; --text-display: 1.602rem; --text-section: 1.266rem; --text-title: 1.125rem; --text-lead: 1rem;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); --ease-in: cubic-bezier(0.7, 0, 0.84, 0); --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms; --dur-short: 220ms; --dur-long: 420ms;
+
+  --app-bg: oklch(7.5% 0.012 259);
+  --sidebar-bg: oklch(11% 0.016 259);
+  --surface: oklch(15.5% 0.018 259);
+  --surface-raised: oklch(20% 0.02 259);
+  --input-bg: oklch(12% 0.016 259);
+  --border: oklch(30% 0.024 259);
+  --border-strong: oklch(40% 0.028 259);
+
+  --text-primary: oklch(97% 0.007 250);
+  --text-secondary: oklch(84% 0.012 250);
+  --text-muted: oklch(71% 0.014 250);
+  --accent: oklch(55% 0.19 264);
+  --accent-hover: oklch(48% 0.19 264);
+  --link: oklch(78% 0.11 250);
+  --success: oklch(78% 0.14 158);
+  --warning: oklch(85% 0.14 88);
+  --danger: oklch(72% 0.16 25);
+  --on-accent: oklch(99% 0.004 250);
+
+  --color-paper: var(--app-bg);
+  --color-paper-2: var(--sidebar-bg);
+  --color-paper-3: var(--surface);
+  --color-ink: var(--text-primary);
+  --color-ink-2: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-rule: var(--border);
+  --color-rule-2: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--on-accent);
+  --color-focus: var(--link);
+  --color-error: var(--danger);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  --font-display: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-body: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-outlier: var(--font-body);
+
+  --radius-card: 8px;
+  --radius-control: 6px;
+  --radius-pill: 999px;
+  --rule-hair: 1px;
+  --shadow-card: none;
+  --shadow-dialog: 0 16px 40px oklch(4% 0.01 259 / 0.45);
+  --scrim: oklch(4% 0.01 259 / 0.6);
+  --backdrop: oklch(4% 0.01 259 / 0.7);
+  --tracking-display: -0.01em;
+  --container: 1600px;
+  --gutter: 24px;
+  --gap-columns: 24px;
+  --section-gap-s: 48px;
+  --section-gap: 64px;
+  --section-gap-l: 96px;
+  --sidebar-width: 240px;
+  --topbar-height: 64px;
+  --control-height: 40px;
+  --control-hit: 44px;
+  --row-height: 52px;
+
+  --z-base: 1; --z-raised: 10; --z-dropdown: 100; --z-sticky: 200; --z-sticky-nav: 300; --z-modal: 400; --z-toast: 500; --z-tooltip: 600;
+}

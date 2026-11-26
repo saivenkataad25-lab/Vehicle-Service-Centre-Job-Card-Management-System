@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Database verification evidence</title>
+<style>
+:root { color-scheme: dark; font-family: Inter, system-ui, sans-serif; background: #070a10; color: #e8edf6; }
+body { margin: 0; padding: 40px; }
+main { max-width: 1100px; margin: auto; }
+h1 { font-size: 28px; margin: 0 0 8px; }
+p.secondary { color: #9aa7bb; margin: 0 0 24px; }
+section { background: #0f1520; border: 1px solid #263044; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+h2 { font-size: 16px; margin: 0 0 12px; color: #8fc2ff; }
+pre { margin: 0; white-space: pre-wrap; word-break: break-word; color: #d7e2f2; font-size: 12px; line-height: 1.5; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #263044; }
+th { color: #9aa7bb; font-weight: 500; }
+</style></head>
+<body><main><h1>Database verification evidence</h1><p class="secondary">Vehicle Service Centre Job Card Management System · Phase 7 evidence · 2026-11-26</p>
+<section><h2>MySQL table columns (vsc_job_card)</h2><pre>TABLE_NAME	COLUMN_NAME	COLUMN_TYPE
+customers	customer_id	bigint unsigned
+customers	customer_code	varchar(30)
+customers	phone	varchar(30)
+job_cards	job_card_id	bigint unsigned
+job_cards	booking_id	bigint unsigned
+job_cards	technician_id	bigint unsigned
+service_bookings	booking_id	bigint unsigned
+service_bookings	vehicle_id	bigint unsigned
+technicians	technician_id	bigint unsigned
+technicians	phone	varchar(30)
+vehicles	vehicle_id	bigint unsigned
+vehicles	registration_number	varchar(30)
+vehicles	customer_id	bigint unsigned</pre></section>
+<section><h2>Row counts</h2><pre>table_name	rows_count
+customers	15
+vehicles	19
+service_bookings	19
+technicians	6
+job_cards	16</pre></section>
+<section><h2>Foreign-key relationships</h2><pre>CONSTRAINT_NAME	TABLE_NAME	COLUMN_NAME	REFERENCED_TABLE_NAME	REFERENCED_COLUMN_NAME
+fk_job_cards_booking	job_cards	booking_id	service_bookings	booking_id
+fk_job_cards_technician	job_cards	technician_id	technicians	technician_id
+fk_service_bookings_vehicle	service_bookings	vehicle_id	vehicles	vehicle_id
+fk_vehicles_customer	vehicles	customer_id	customers	customer_id</pre></section>
+</main></body>
+</html>

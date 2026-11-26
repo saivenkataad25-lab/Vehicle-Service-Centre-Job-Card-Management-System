@@ -1,0 +1,38 @@
+<div class="app-shell">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <aside class="sidebar" [class.is-open]="menuOpen()">
+    <a class="brand" routerLink="/dashboard" (click)="closeMenu()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <path d="M4 16.5V9l3-4h10l3 4v7.5" />
+        <path d="M4 16.5h16M7 12h10M8.5 16.5v2M15.5 16.5v2" />
+      </svg>
+      <span>Vehicle Service Centre</span>
+    </a>
+
+    <nav class="nav" aria-label="Main navigation">
+      @for (item of navItems; track item.path) {
+        <a class="nav-link" [routerLink]="item.path" routerLinkActive="is-active" (click)="closeMenu()">{{ item.label }}</a>
+      }
+    </nav>
+
+    <p class="nav-footer">Workshop operations</p>
+  </aside>
+
+  @if (menuOpen()) {
+    <button class="scrim" type="button" aria-label="Close navigation" (click)="closeMenu()"></button>
+  }
+
+  <div class="content">
+    <header class="topbar">
+      <button class="btn btn-secondary menu-toggle" type="button" [attr.aria-expanded]="menuOpen()" (click)="toggleMenu()">Menu</button>
+      <span class="topbar-title">Workshop operations</span>
+      <app-global-search />
+      <span class="user-chip">Workshop team</span>
+    </header>
+
+    <main id="main" class="main">
+      <router-outlet />
+    </main>
+  </div>
+</div>

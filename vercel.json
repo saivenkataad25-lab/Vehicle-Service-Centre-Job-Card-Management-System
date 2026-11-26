@@ -1,0 +1,14 @@
+{
+  "installCommand": "npm --prefix frontend ci",
+  "buildCommand": "npm --prefix frontend run build",
+  "outputDirectory": "frontend/dist/vehicle-job-card/browser",
+  "rewrites": [
+    { "source": "/dashboard", "destination": "/index.html" },
+    { "source": "/customers/:path*", "destination": "/index.html" },
+    { "source": "/vehicles/:path*", "destination": "/index.html" },
+    { "source": "/bookings/:path*", "destination": "/index.html" },
+    { "source": "/job-cards/:path*", "destination": "/index.html" },
+    { "source": "/technicians/:path*", "destination": "/index.html" },
+    { "source": "/reports", "destination": "/index.html" }
+  ]
+}
