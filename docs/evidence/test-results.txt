@@ -2,59 +2,29 @@ Command: node scripts/api-tests.mjs (npm run test:api)
 T16 UI workflow evidence: docs/evidence/03-create.png through 06-status.png
 T13 verification command: npm run test:api -- verify (restart backend first)
 API test base: http://localhost:8080/api
-Run date: 2026-11-27T11:49:00.919Z
+Run date: 2026-11-27T12:28:20.137Z
 PASS T01 Customer create/view/update/read | expected=201/200/200/200 and updated address retained | actual=201/200/200/200; address=2 Updated Road
-PASS T02 Vehicle add/update with customer relationship | expected=201/200/200/200 and odometer retained | actual=201/200/200/200; customerId=4; odometer=12500
+PASS T02 Vehicle add/update with customer relationship | expected=201/200/200/200 and odometer retained | actual=201/200/200/200; customerId=10; odometer=12500
 PASS T03 Duplicate registration rejected | expected=409 with registration message | actual=status=409; message=Vehicle registration number already exists
 PASS T04 Invalid foreign key rejected | expected=404 with customer message | actual=status=404; message=Customer not found with id 999999999
-PASS T05 Booking create and read | expected=201/200 with correct vehicle | actual=201/200; registration=API-136367
+PASS T05 Booking create and read | expected=201/200 with correct vehicle | actual=201/200; registration=API-496059
 PASS T06 One job card per booking | expected=first 201, second 409 because booking is no longer CONFIRMED or job card exists | actual=first=201; second=409; message=Job card can only be created from a CONFIRMED booking
 PASS T07 Technician availability enforced | expected=available 201, unavailable 409 | actual=available=201; unavailable=409; message=Unavailable technician cannot be newly assigned
 PASS T08 Backend estimate and negative rejection | expected=estimate 60.00; negative hours 400 | actual=estimate=60; negative=400
 PASS T09 Status transitions controlled | expected=allowed 200; invalid 409 | actual=start=200; invalid=409; hold=200; resume=200
 PASS T10 Completion notes and delivery timestamp | expected=no notes 409; with notes 200; delivery 200 | actual=noNotes=409; withNotes=200; delivered=200; completedAt=true; deliveredAt=true
 PASS T11 Completed/delivered job deletion blocked | expected=409 conflict | actual=status=409; message=Completed or delivered job card cannot be deleted
-PASS T12 Dependency deletion blocked and rows retained | expected=three 409 responses and unchanged counts | actual=statuses=409/409/409; before={"customers":4,"vehicles":7,"technicians":5}; after={"customers":4,"vehicles":7,"technicians":5}
+PASS T12 Dependency deletion blocked and rows retained | expected=three 409 responses and unchanged counts | actual=statuses=409/409/409; before={"customers":7,"vehicles":12,"technicians":9}; after={"customers":7,"vehicles":12,"technicians":9}
 PASS T14 Dashboard and completed report | expected=all dashboard/report endpoints 200 with live data | actual=summary=200; counts=200; delayed=200; upcoming=200; report=200; reportContainsJob=true
 PASS T15 Phone validation | expected=9 and 11 digits 400; 10 digits 201 | actual=short=400; long=400; valid=201; cleanup=204
-SUMMARY 14/14 checks passed
+PASS T17 Phone must contain only digits | expected=400 with phone message | actual=status=400; message=Validation failed
+PASS T18 Cancelled booking cannot be reactivated | expected=cancel 200, revert 409 | actual=cancel=200; revert=409; message=Cancelled booking cannot be changed to another status
+PASS T19 Completed job locked except delivery | expected=start/complete 200; reopen and note edit 409; deliver 200 | actual=start=200; complete=200; reopen=409; noteEdit=409; deliver=200
+PASS T20 Promised date cannot precede opened date | expected=409 with date message | actual=status=409; message=Promised date cannot be earlier than opened date
+SUMMARY 18/18 checks passed
 
-Command: node scripts/api-tests.mjs verify (after backend restart)
+Command: node scripts/api-tests.mjs verify (npm run test:api -- verify, after backend restart)
 API test base: http://localhost:8080/api
-Run date: 2026-11-27T11:50:39.151Z
-PASS T13 Persistence after backend restart | expected=completed job present with notes and completedAt after restart | actual=report=200; found=true; notes=true; completedAt=true; customers=4; vehicles=7; bookings=9; jobCards=6
+Run date: 2026-11-27T12:28:49.835Z
+PASS T13 Persistence after backend restart | expected=completed job present with notes and completedAt after restart | actual=report=200; found=true; notes=true; completedAt=true; customers=7; vehicles=12; bookings=18; jobCards=11
 SUMMARY 1/1 checks passed
-OK   clicked "Save customer"
-OK   customer created via UI (id 7)
-OK   option containing "E2E Driver 0445833" exists in #vehicle-customer
-OK   option containing "Diesel" exists in #vehicle-fuel
-OK   clicked "Save vehicle"
-OK   vehicle created via UI (id 8)
-OK   option containing "E2E-0445833" exists in #booking-vehicle
-OK   option containing "Confirmed" exists in #booking-status
-OK   clicked "Save booking"
-OK   confirmed booking created via UI (id 10)
-OK   booking detail shows confirmed status
-OK   confirmed booking offers job-card conversion
-OK   clicked "Create job card"
-OK   booking preselected by query param
-OK   technician available for assignment
-OK   option containing "Daniel Mwangi" exists in #job-technician
-OK   clicked "Create job card"
-OK   job card created via UI (id 7)
-OK   job card number displayed (JC-2026-0007)
-OK   recalculated labour estimate formatted to 2 decimals
-OK   job card detail shows no raw ISO dates
-OK   clicked "Start work"
-OK   OPEN -> IN_PROGRESS transition persisted
-OK   clicked "Complete work"
-OK   IN_PROGRESS -> COMPLETED transition persisted
-OK   completion notes persisted
-OK   status history retained
-OK   job card survives refresh with status and notes
-OK   completed report lists new job card
-OK   completed report date filters retain new job card
-OK   report money formatting matches detail formatting
-OK   dashboard renders after workflow
-OK   no browser console/page errors (0)
-E2E_SMOKE_OK customer=7 vehicle=8 booking=10 job=7 jobNumber=JC-2026-0007

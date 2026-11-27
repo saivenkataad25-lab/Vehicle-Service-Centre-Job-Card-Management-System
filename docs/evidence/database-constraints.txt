@@ -1,0 +1,15 @@
+$ . scripts/env.sh && MYSQL_PWD="$VSC_DB_PASSWORD" mysql -h "$VSC_DB_HOST" -P "$VSC_DB_PORT" -u "$VSC_DB_USERNAME" "$VSC_DB_NAME" --force < scripts/evidence/database-constraints.sql
+ERROR 1062 (23000) at line 1: Duplicate entry 'CUST-0001' for key 'customers.uq_customers_customer_code'
+ERROR 1452 (23000) at line 4: Cannot add or update a child row: a foreign key constraint fails (`vsc_job_card`.`vehicles`, CONSTRAINT `fk_vehicles_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE RESTRICT ON UPDATE CASCADE)
+ERROR 3819 (HY000) at line 7: Check constraint 'chk_service_bookings_status' is violated.
+ERROR 3819 (HY000) at line 10: Check constraint 'chk_service_bookings_preferred_date' is violated.
+ERROR 1062 (23000) at line 13: Duplicate entry '1' for key 'job_cards.uq_job_cards_booking_id'
+ERROR 3819 (HY000) at line 18: Check constraint 'chk_job_cards_labour_estimate' is violated.
+
+$ mysql -e "SELECT COUNT(*) ..." row counts unchanged
+table_name	rows_count
+customers	7
+vehicles	12
+service_bookings	18
+technicians	9
+job_cards	11

@@ -257,6 +257,44 @@ record('T15', 'Phone validation',
   `short=${shortPhone.status}; long=${longPhone.status}; valid=${validPhoneCreated.status}; cleanup=${validPhoneDelete.status}`,
   shortPhone.status === 400 && longPhone.status === 400 && validPhoneCreated.status === 201 && validPhoneDelete.status === 204);
 
+const nonDigitPhone = await call('POST', '/customers', customerBody(`C-ND-${suffix}`, '12345abcd', '6 Test Road'));
+record('T17', 'Phone must contain only digits',
+  '400 with phone message',
+  `status=${nonDigitPhone.status}; message=${nonDigitPhone.data.message ?? ''}`,
+  nonDigitPhone.status === 400 && /validation|digit/i.test(String(nonDigitPhone.data.message)));
+
+const cancelBookingBody = bookingBody(vehicleCreated.data.id, `BK-CANCEL-${suffix}`);
+const cancelBookingCreated = await call('POST', '/service-bookings', cancelBookingBody);
+const cancelled = await call('PUT', `/service-bookings/${cancelBookingCreated.data.id}`,
+  { ...cancelBookingBody, bookingStatus: 'CANCELLED' });
+const cancelReverted = await call('PUT', `/service-bookings/${cancelBookingCreated.data.id}`,
+  { ...cancelBookingBody, bookingStatus: 'CONFIRMED' });
+record('T18', 'Cancelled booking cannot be reactivated',
+  'cancel 200, revert 409',
+  `cancel=${cancelled.status}; revert=${cancelReverted.status}; message=${cancelReverted.data.message ?? ''}`,
+  cancelled.status === 200 && cancelReverted.status === 409 && /cancel/i.test(String(cancelReverted.data.message)));
+
+const lockedJobCreated = await call('POST', '/job-cards', jobCreate(altBooking.id, availableTech.id));
+const lockedStarted = await call('PUT', `/job-cards/${lockedJobCreated.data.id}`, validUpdate('IN_PROGRESS'));
+const lockedCompleted = await call('PUT', `/job-cards/${lockedJobCreated.data.id}`,
+  validUpdate('COMPLETED', 'Locked completion notes.'));
+const lockedReopened = await call('PUT', `/job-cards/${lockedJobCreated.data.id}`,
+  validUpdate('IN_PROGRESS', 'Changed notes.'));
+const lockedNotesChanged = await call('PUT', `/job-cards/${lockedJobCreated.data.id}`,
+  validUpdate('COMPLETED', 'Changed notes.'));
+const lockedDelivered = await call('PUT', `/job-cards/${lockedJobCreated.data.id}`, validUpdate('DELIVERED'));
+record('T19', 'Completed job locked except delivery',
+  'start/complete 200; reopen and note edit 409; deliver 200',
+  `start=${lockedStarted.status}; complete=${lockedCompleted.status}; reopen=${lockedReopened.status}; noteEdit=${lockedNotesChanged.status}; deliver=${lockedDelivered.status}`,
+  lockedStarted.status === 200 && lockedCompleted.status === 200 && lockedReopened.status === 409 && lockedNotesChanged.status === 409 && lockedDelivered.status === 200);
+
+const dateBooking = (await call('POST', '/service-bookings', bookingBody(vehicleCreated.data.id, `BK-DATE-${suffix}`))).data;
+const badDate = await call('POST', '/job-cards', jobCreate(dateBooking.id, availableTech.id, shift(-1), today));
+record('T20', 'Promised date cannot precede opened date',
+  '409 with date message',
+  `status=${badDate.status}; message=${badDate.data.message ?? ''}`,
+  badDate.status === 409 && /date/i.test(String(badDate.data.message)));
+
 writeFileSync(statePath, JSON.stringify({
   jobId: job.id,
   jobCardNumber: job.jobCardNumber,

@@ -59,7 +59,7 @@ export class CustomerFormComponent implements OnInit {
   readonly form = this.builder.nonNullable.group({
     customerCode: ['', [Validators.required, Validators.maxLength(30)]],
     fullName: ['', [Validators.required, Validators.maxLength(100)]],
-    phone: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10)]],
+    phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
     address: ['', [Validators.required, Validators.maxLength(255)]]
   });
@@ -96,8 +96,8 @@ export class CustomerFormComponent implements OnInit {
     if (control.hasError('email')) {
       return 'Enter a valid email address.';
     }
-    if (name === 'phone' && (control.hasError('minlength') || control.hasError('maxlength'))) {
-      return 'Phone must be exactly 10 characters.';
+    if (name === 'phone' && control.hasError('pattern')) {
+      return 'Phone must be exactly 10 digits.';
     }
     return 'Check this value.';
   }

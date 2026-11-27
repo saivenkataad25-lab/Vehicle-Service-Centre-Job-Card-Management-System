@@ -63,7 +63,7 @@ export class TechnicianFormComponent implements OnInit {
     technicianCode: ['', [Validators.required, Validators.maxLength(30)]],
     fullName: ['', [Validators.required, Validators.maxLength(100)]],
     skillArea: ['', [Validators.required, Validators.maxLength(100)]],
-    phone: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10)]],
+    phone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     availabilityStatus: ['AVAILABLE', [Validators.required]]
   });
 
@@ -96,8 +96,8 @@ export class TechnicianFormComponent implements OnInit {
     if (control.hasError('required')) {
       return 'This field is required.';
     }
-    if (name === 'phone' && (control.hasError('minlength') || control.hasError('maxlength'))) {
-      return 'Phone must be exactly 10 characters.';
+    if (name === 'phone' && control.hasError('pattern')) {
+      return 'Phone must be exactly 10 digits.';
     }
     return 'Check this value.';
   }

@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { ApiService } from '../../core/api.service';
 import { ApiFailure, Booking, Customer, JobCard, Technician, Vehicle } from '../../core/models';
 import { EmptyStateComponent, ErrorMessageComponent, FormFieldComponent, PageHeaderComponent, formatMoney as formatMoneyValue } from '../../shared/ui';
+import { dateOrderValidator } from '../../shared/validators';
 
 @Component({
   selector: 'app-job-card-form',
@@ -120,7 +121,7 @@ export class JobCardFormComponent implements OnInit {
     openedDate: [this.today(), [Validators.required]],
     promisedDate: [this.inDays(7), [Validators.required]],
     serviceTasks: this.builder.nonNullable.array([this.taskGroup()])
-  });
+  }, { validators: [dateOrderValidator] });
 
   get tasks(): FormArray {
     return this.form.controls.serviceTasks;
@@ -198,6 +199,9 @@ export class JobCardFormComponent implements OnInit {
     const serverError = this.failure()?.fieldErrors[name];
     if (serverError) {
       return serverError;
+    }
+    if (name === 'promisedDate' && this.form.hasError('dateOrder')) {
+      return 'Promised date cannot be earlier than opened date.';
     }
     const control = this.form.get(name);
     if (!control || !control.touched || !control.invalid) {

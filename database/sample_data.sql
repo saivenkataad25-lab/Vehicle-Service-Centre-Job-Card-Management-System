@@ -13,7 +13,7 @@ INSERT INTO vehicles (vehicle_id, registration_number, make, model, `year`, fuel
 INSERT INTO technicians (technician_id, technician_code, full_name, skill_area, phone, availability_status) VALUES
   (1, 'TECH-001', 'Daniel Mwangi', 'Engine and diagnostics', '0722001001', 'AVAILABLE'),
   (2, 'TECH-002', 'Grace Njoroge', 'Brakes and suspension', '0722001002', 'AVAILABLE'),
-  (3, 'TECH-003', 'Samuel Otieno', 'Electrical and air conditioning', '0722001003', 'UNAVAILABLE');
+  (3, 'TECH-003', 'Samuel Otieno', 'Electrical and air conditioning', '0722001003', 'AVAILABLE');
 
 INSERT INTO service_bookings (booking_id, booking_number, vehicle_id, booking_date, preferred_date, complaint, booking_status) VALUES
   (1, 'BK-2026-0001', 1, '2026-11-14', '2026-11-18', 'Engine noise and rough idle', 'CONVERTED'),

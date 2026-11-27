@@ -77,6 +77,10 @@ public class ServiceBookingService {
         if (request.bookingStatus() == BookingStatus.CONVERTED) {
             throw new ConflictException("Booking status cannot be set to CONVERTED directly");
         }
+        if (booking.getBookingStatus() == BookingStatus.CANCELLED
+                && request.bookingStatus() != BookingStatus.CANCELLED) {
+            throw new ConflictException("Cancelled booking cannot be changed to another status");
+        }
 
         String bookingNumber = request.bookingNumber().trim();
         if (!bookingNumber.equals(booking.getBookingNumber())

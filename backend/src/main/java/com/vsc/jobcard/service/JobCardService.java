@@ -136,6 +136,17 @@ public class JobCardService {
         if (currentStatus != targetStatus && !isTransitionAllowed(currentStatus, targetStatus)) {
             throw new ConflictException("Invalid job status transition: " + currentStatus + " to " + targetStatus);
         }
+        if (currentStatus == JobStatus.COMPLETED && targetStatus != JobStatus.DELIVERED) {
+            throw new ConflictException("Completed job card can only be delivered");
+        }
+        if (currentStatus == JobStatus.COMPLETED && targetStatus == JobStatus.DELIVERED) {
+            List<StatusHistoryEntryResponse> deliveryHistory = readHistory(card.getStatusHistoryJson());
+            deliveryHistory.add(historyEntry(currentStatus, targetStatus, "Job card status changed to DELIVERED"));
+            card.setJobStatus(JobStatus.DELIVERED);
+            card.setDeliveredAt(LocalDateTime.now());
+            card.setStatusHistoryJson(writeJson(deliveryHistory));
+            return toResponse(jobCardRepository.save(card));
+        }
 
         Technician technician = resolveTechnicianChange(card, request.technicianId());
         List<ServiceTaskResponse> tasks = calculateTasks(request.serviceTasks());

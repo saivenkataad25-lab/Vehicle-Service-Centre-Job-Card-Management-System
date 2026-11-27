@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { ApiService } from '../../core/api.service';
 import { ApiFailure, Booking, Customer, JobCard, Technician, Vehicle } from '../../core/models';
 import { ConfirmDialogComponent, ErrorMessageComponent, FormFieldComponent, PageHeaderComponent, StatusBadgeComponent, formatDate as formatDateValue, formatDateTime as formatDateTimeValue, formatMoney as formatMoneyValue } from '../../shared/ui';
+import { dateOrderValidator } from '../../shared/validators';
 
 interface StatusAction {
   status: string;
@@ -172,7 +173,7 @@ export class JobCardDetailComponent implements OnInit {
     jobStatus: ['OPEN', [Validators.required]],
     completionNotes: [''],
     serviceTasks: this.builder.nonNullable.array([this.taskGroup()])
-  });
+  }, { validators: [dateOrderValidator] });
 
   get tasks(): FormArray {
     return this.form.controls.serviceTasks;
@@ -290,6 +291,9 @@ export class JobCardDetailComponent implements OnInit {
     const serverError = this.failure()?.fieldErrors[name];
     if (serverError) {
       return serverError;
+    }
+    if (name === 'promisedDate' && this.form.hasError('dateOrder')) {
+      return 'Promised date cannot be earlier than opened date.';
     }
     const control = this.form.get(name);
     if (!control || !control.touched || !control.invalid) {
