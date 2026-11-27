@@ -9,6 +9,7 @@
   },
   "private": true,
   "packageManager": "npm@11.19.0",
+  "allowScripts": ["@parcel/watcher", "@swc/core", "core-js", "esbuild", "lmdb", "msgpackr-extract"],
   "dependencies": {
     "@angular/common": "^22.3.0",
     "@angular/compiler": "^22.3.0",
