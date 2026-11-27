@@ -181,4 +181,3 @@ Full-size screenshots are in [`docs/evidence/`](docs/evidence/).
 - `Phone must be exactly 10 characters.`: the phone value is shorter or longer than 10 characters.
 - `409 Conflict`: expected for invalid status transitions, duplicate registrations, protected deletions, or completing without notes.
 
-Detailed historical notes are preserved in [`readme_reference.md`](readme_reference.md).

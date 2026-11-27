@@ -49,7 +49,7 @@ erDiagram
   JOB_CARDS {
     BIGINT job_card_id PK
     VARCHAR job_card_number UK
-    BIGINT booking_id FK_UK
+    BIGINT booking_id FK, UK
     BIGINT technician_id FK
     DATE opened_date
     DATE promised_date
