@@ -28,5 +28,6 @@ echo "java=$(java -version 2>&1 | head -1)"
 echo "maven=$(mvn -v | head -1)"
 echo "mysql=$(mysql --version)"
 
+unset npm_config_allow_scripts || true
 npm ci --prefix frontend
 echo DEPENDENCIES_OK
