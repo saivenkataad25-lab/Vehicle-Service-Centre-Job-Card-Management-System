@@ -9,9 +9,9 @@ Importable Postman collection: `docs/postman_collection.json`
 | Method | Path | Purpose | Key rules |
 |---|---|---|---|
 | GET | `/customers?search=` | List/search customers | Read-only |
-| POST | `/customers` | Create customer | `phone` must be exactly 10 characters |
+| POST | `/customers` | Create customer | `phone` must be exactly 10 digits |
 | GET | `/customers/{id}` | Read one customer | `404` when absent |
-| PUT | `/customers/{id}` | Update customer | `phone` must be exactly 10 characters |
+| PUT | `/customers/{id}` | Update customer | `phone` must be exactly 10 digits |
 | DELETE | `/customers/{id}` | Delete customer | `409` when vehicles exist |
 | GET | `/vehicles?customerId=&search=` | List/filter vehicles | Read-only |
 | POST | `/vehicles` | Create vehicle | Registration unique; customer must exist |
@@ -19,20 +19,20 @@ Importable Postman collection: `docs/postman_collection.json`
 | PUT | `/vehicles/{id}` | Update vehicle | Customer must exist |
 | DELETE | `/vehicles/{id}` | Delete vehicle | `409` when bookings exist |
 | GET | `/technicians?availabilityStatus=&search=` | List/filter technicians | `AVAILABLE` or `UNAVAILABLE` |
-| POST | `/technicians` | Create technician | `phone` must be exactly 10 characters |
+| POST | `/technicians` | Create technician | `phone` must be exactly 10 digits |
 | GET | `/technicians/{id}` | Read one technician | `404` when absent |
-| PUT | `/technicians/{id}` | Update technician | `phone` must be exactly 10 characters |
+| PUT | `/technicians/{id}` | Update technician | `phone` must be exactly 10 digits |
 | DELETE | `/technicians/{id}` | Delete technician | `409` when assigned to a job card |
 | GET | `/service-bookings?status=&vehicleId=` | List/filter bookings | Statuses: `PENDING`, `CONFIRMED`, `CANCELLED`, `CONVERTED` |
 | POST | `/service-bookings` | Create booking | Initial status `PENDING` or `CONFIRMED`; preferred date not before booking date |
 | GET | `/service-bookings/{id}` | Read one booking | `404` when absent |
-| PUT | `/service-bookings/{id}` | Update booking | Cannot set `CONVERTED` directly; cannot edit `CONVERTED` |
+| PUT | `/service-bookings/{id}` | Update booking | Cannot set `CONVERTED` directly; cannot edit `CONVERTED` or reactivate `CANCELLED` |
 | POST | `/service-bookings/{id}/cancel` | Cancel booking | Only `PENDING`/`CONFIRMED` |
 | DELETE | `/service-bookings/{id}` | Delete booking | `409` when job card exists |
 | GET | `/job-cards?status=&overdue=&technicianId=` | List/filter job cards | Read-only |
-| POST | `/job-cards` | Create job card | Booking must be `CONFIRMED`; one card per booking; technician must be `AVAILABLE` when supplied; backend calculates amounts |
+| POST | `/job-cards` | Create job card | Booking must be `CONFIRMED`; one card per booking; promised date not before opened date; technician must be `AVAILABLE` when supplied; backend calculates amounts |
 | GET | `/job-cards/{id}` | Read one job card | Includes tasks and status history |
-| PUT | `/job-cards/{id}` | Update job/tasks/status | Allowed transitions only; `COMPLETED` requires notes; `DELIVERED` cannot be edited |
+| PUT | `/job-cards/{id}` | Update job/tasks/status | Allowed transitions only; `COMPLETED` requires notes and only allows delivery; `DELIVERED` cannot be edited |
 | DELETE | `/job-cards/{id}` | Delete job card | `409` for `COMPLETED`/`DELIVERED`; booking returns to `CONFIRMED` |
 | GET | `/dashboard/summary` | Counts and overdue/upcoming totals | Derived from MySQL |
 | GET | `/dashboard/job-status-counts` | Counts for all five statuses | Includes zero counts |
@@ -57,4 +57,4 @@ Importable Postman collection: `docs/postman_collection.json`
 - `404 Not Found`: missing resource or foreign key.
 - `409 Conflict`: invalid workflow/protected deletion/duplicate registration.
 
-Phone validation message: `phone must be exactly 10 characters`.
+Phone validation message: `phone must be exactly 10 digits`.

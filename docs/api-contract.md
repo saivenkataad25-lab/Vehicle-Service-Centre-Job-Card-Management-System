@@ -37,7 +37,7 @@ Request: `CustomerRequest`. Returns `200 OK` with `CustomerResponse`.
 ### DELETE /api/customers/{id}
 Returns `204 No Content`. Returns `409 Conflict` when linked vehicles exist.
 
-Validation: `phone` must be exactly 10 characters.
+Validation: `phone` must be exactly 10 digits.
 
 ```json
 CustomerRequest {
@@ -116,7 +116,7 @@ Request: `TechnicianRequest`. Returns `200 OK`.
 ### DELETE /api/technicians/{id}
 Returns `204 No Content`. Returns `409 Conflict` when assigned to any job card.
 
-Validation: `phone` must be exactly 10 characters.
+Validation: `phone` must be exactly 10 digits.
 
 ```json
 TechnicianRequest {
@@ -157,7 +157,7 @@ Backend rules:
 - `preferredDate` cannot be earlier than `bookingDate`.
 - Status cannot be set directly to `CONVERTED`.
 - A `CONVERTED` booking cannot be edited except by the job-card workflow.
-- A `CANCELLED` booking cannot become `CONVERTED` manually.
+- A `CANCELLED` booking cannot be changed to another status.
 
 ### DELETE /api/service-bookings/{id}
 Returns `204 No Content`. Returns `409 Conflict` when a job card exists.
@@ -204,6 +204,7 @@ Rules:
 - Only one job card per booking.
 - Technician must exist and be `AVAILABLE` when supplied.
 - Initial status is always `OPEN`.
+- `promisedDate` cannot be earlier than `openedDate`.
 - Backend generates `jobCardNumber`.
 - Backend calculates all task amounts and `labourEstimate`.
 
@@ -213,9 +214,9 @@ Request: `JobCardUpdateRequest`. Returns `200 OK`.
 Rules:
 - Status transitions: `OPEN -> IN_PROGRESS | ON_HOLD`, `IN_PROGRESS -> ON_HOLD | COMPLETED`, `ON_HOLD -> IN_PROGRESS`, `COMPLETED -> DELIVERED`, `DELIVERED -> none`.
 - Same-status updates are allowed for non-terminal statuses.
-- `COMPLETED` requires non-blank `completionNotes`; blank notes on later updates keep the saved notes.
+- `COMPLETED` requires non-blank `completionNotes`; a completed card can only transition to `DELIVERED` and cannot otherwise be edited.
 - `DELIVERED` cannot be edited.
-- `completedAt` is set when a card first becomes `COMPLETED`, and `deliveredAt` when it first becomes `DELIVERED`; both are preserved on same-status or unrelated updates.
+- `completedAt` is set when a card first becomes `COMPLETED`, and `deliveredAt` when it first becomes `DELIVERED`; both are preserved after completion.
 - A job card may have no technician (`technicianId: null`); supplied technicians follow the same availability rule.
 - Backend recalculates amounts and estimate.
 

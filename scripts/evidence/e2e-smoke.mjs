@@ -1,4 +1,8 @@
-import puppeteer from 'puppeteer-core';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+const puppeteerModule = await import(process.env.VSC_PUPPETEER_CORE || pathToFileURL(resolve('.tools/node_modules/puppeteer-core/lib/puppeteer/puppeteer-core.js')).href);
+const puppeteer = puppeteerModule.default || puppeteerModule;
 
 const base = 'http://localhost:4200';
 const api = 'http://localhost:8080/api';

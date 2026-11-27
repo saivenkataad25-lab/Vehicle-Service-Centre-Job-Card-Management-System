@@ -28,3 +28,39 @@ API test base: http://localhost:8080/api
 Run date: 2026-11-27T12:28:49.835Z
 PASS T13 Persistence after backend restart | expected=completed job present with notes and completedAt after restart | actual=report=200; found=true; notes=true; completedAt=true; customers=7; vehicles=12; bookings=18; jobCards=11
 SUMMARY 1/1 checks passed
+
+Command: node scripts/evidence/e2e-smoke.mjs (npm run test:e2e)
+OK   clicked "Save customer"
+OK   customer created via UI (id 17)
+OK   option containing "E2E Driver 3501615" exists in #vehicle-customer
+OK   option containing "Diesel" exists in #vehicle-fuel
+OK   clicked "Save vehicle"
+OK   vehicle created via UI (id 16)
+OK   option containing "E2E-3501615" exists in #booking-vehicle
+OK   option containing "Confirmed" exists in #booking-status
+OK   clicked "Save booking"
+OK   confirmed booking created via UI (id 23)
+OK   booking detail shows confirmed status
+OK   confirmed booking offers job-card conversion
+OK   clicked "Create job card"
+OK   booking preselected by query param
+OK   technician available for assignment
+OK   option containing "Daniel Mwangi" exists in #job-technician
+OK   clicked "Create job card"
+OK   job card created via UI (id 15)
+OK   job card number displayed (JC-2026-0014)
+OK   recalculated labour estimate formatted to 2 decimals
+OK   job card detail shows no raw ISO dates
+OK   clicked "Start work"
+OK   OPEN -> IN_PROGRESS transition persisted
+OK   clicked "Complete work"
+OK   IN_PROGRESS -> COMPLETED transition persisted
+OK   completion notes persisted
+OK   status history retained
+OK   job card survives refresh with status and notes
+OK   completed report lists new job card
+OK   completed report date filters retain new job card
+OK   report money formatting matches detail formatting
+OK   dashboard renders after workflow
+OK   no browser console/page errors (0)
+E2E_SMOKE_OK customer=17 vehicle=16 booking=23 job=15 jobNumber=JC-2026-0014

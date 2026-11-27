@@ -38,6 +38,6 @@ Output goes to `frontend/dist/`.
 ## Notes
 
 - All data comes from the Spring Boot API; there is no JSON Server or mock data.
-- Customer and technician phone fields require exactly 10 characters.
+- Customer and technician phone fields require exactly 10 digits.
 - Status history and service-task amounts are backend-calculated and read-only in the UI.
 - `src/styles.css` and `src/app/shared/ui.ts` define the Dark Workshop visual system.

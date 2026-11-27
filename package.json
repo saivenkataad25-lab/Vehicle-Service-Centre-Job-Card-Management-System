@@ -15,7 +15,7 @@
     "test:api": "node scripts/api-tests.mjs",
     "test:e2e": "node scripts/evidence/e2e-smoke.mjs",
     "evidence:newman": "node scripts/evidence/run-newman.mjs",
-    "evidence:pages": "node scripts/evidence/generate-evidence-pages.mjs",
+    "evidence:pages": "bash -c '. scripts/env.sh && node scripts/evidence/generate-evidence-pages.mjs'",
     "evidence:screenshots": "node scripts/evidence/screenshots.mjs"
   }
 }

@@ -1,9 +1,10 @@
-import puppeteer from 'puppeteer-core';
 import { writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+const puppeteerModule = await import(process.env.VSC_PUPPETEER_CORE || pathToFileURL(resolve('.tools/node_modules/puppeteer-core/lib/puppeteer/puppeteer-core.js')).href);
+const puppeteer = puppeteerModule.default || puppeteerModule;
 const mode = process.argv[2] || 'all';
 const browser = await puppeteer.launch({ headless: true, executablePath: process.env.CHROME_PATH, args: ['--no-sandbox'] });
 const page = await browser.newPage();

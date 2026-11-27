@@ -1,6 +1,6 @@
 # Database constraint checks
 
-Run these after `database/schema.sql` and `database/sample_data.sql`.
+Run these after `database/schema.sql` and `database/sample_data.sql`. An executed transcript of all expected failures is in [`evidence/database-constraints.txt`](evidence/database-constraints.txt); the reproducible statements are in [`../scripts/evidence/database-constraints.sql`](../scripts/evidence/database-constraints.sql).
 
 ## Setup
 ```bash

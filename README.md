@@ -145,7 +145,7 @@ Postman collection: [`docs/postman_collection.json`](docs/postman_collection.jso
 | GET | `/dashboard/upcoming-jobs` | Upcoming jobs |
 | GET | `/reports/completed-job-cards` | Completed-job report |
 
-Status flow: `OPEN → IN_PROGRESS | ON_HOLD`, `IN_PROGRESS → ON_HOLD | COMPLETED`, `ON_HOLD → IN_PROGRESS`, `COMPLETED → DELIVERED`. Completion notes are required before completion. Invalid operations return `400` or `409`. Customer and technician phone numbers must be exactly 10 characters.
+Status flow: `OPEN → IN_PROGRESS | ON_HOLD`, `IN_PROGRESS → ON_HOLD | COMPLETED`, `ON_HOLD → IN_PROGRESS`, `COMPLETED → DELIVERED`. Completion notes are required before completion; completed job cards can only be delivered. A cancelled booking cannot be reactivated. Invalid operations return `400` or `409`. Customer and technician phone numbers must be exactly 10 digits, and the promised date cannot precede the opened date.
 
 ## SQL scripts and ER diagram
 
@@ -157,9 +157,15 @@ Status flow: `OPEN → IN_PROGRESS | ON_HOLD`, `IN_PROGRESS → ON_HOLD | COMPLE
 ## Testing and screenshots
 
 - [`docs/test-matrix.md`](docs/test-matrix.md) — requirements test matrix and evidence index
-- [`docs/evidence/test-results.txt`](docs/evidence/test-results.txt) — API test transcript
+- [`docs/evidence/test-results.txt`](docs/evidence/test-results.txt) — API and browser test transcript
 - [`docs/postman_collection.json`](docs/postman_collection.json) — importable Postman collection
+- [`docs/evidence/newman-run.txt`](docs/evidence/newman-run.txt) — Newman run of the Postman collection
+- [`docs/evidence/clean-start.txt`](docs/evidence/clean-start.txt) — fresh checkout setup, build, and API verification
+- [`docs/evidence/database-constraints.txt`](docs/evidence/database-constraints.txt) — executed constraint-failure transcript
 - `npm run test:api` — reproducible API checks; after restarting the backend, run `npm run test:api -- verify` to confirm persistence
+- `npm run evidence:newman` — run the Postman collection with Newman
+- `npm run test:e2e` — browser workflow smoke test
+- `npm run evidence:pages` and `npm run evidence:screenshots` — regenerate the evidence pages and screenshots
 
 | # | Required evidence | Thumbnail | Full size |
 |---|---|---|---|
@@ -186,5 +192,6 @@ Status flow: `OPEN → IN_PROGRESS | ON_HOLD`, `IN_PROGRESS → ON_HOLD | COMPLE
 - `Access denied` from MySQL: check `.env` credentials and rerun `npm run db:setup`.
 - `Failed to connect` on port `8080`: start the backend with `npm run api`.
 - Angular `/api` returns `404`: start the backend and use `npm run web` so the dev-server proxy is active.
-- `Phone must be exactly 10 characters.`: the phone value is shorter or longer than 10 characters.
-- `409 Conflict`: expected for invalid status transitions, duplicate registrations, protected deletions, or completing without notes.
+- `Phone must be exactly 10 digits.`: the phone value must contain only digits and have exactly 10 digits.
+- `Promised date cannot be earlier than opened date.`: choose a promised date on or after the opened date.
+- `409 Conflict`: expected for invalid status transitions, reactivating a cancelled booking, editing a completed job card, duplicate registrations, protected deletions, or completing without notes.

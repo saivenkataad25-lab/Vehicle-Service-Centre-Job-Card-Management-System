@@ -1,0 +1,200 @@
+$ npx --yes newman run docs/postman_collection.json --reporters cli
+newman
+
+Vehicle Service Centre Job Card API
+
+❏ Customers
+↳ GET all customers
+  GET http://localhost:8080/api/customers?search= [200 OK, 1.33kB, 77ms]
+
+↳ POST create customer
+  POST http://localhost:8080/api/customers [201 Created, 432B, 599ms]
+  ✓  created
+
+↳ GET customer by id
+  GET http://localhost:8080/api/customers/13 [200 OK, 398B, 20ms]
+
+↳ PUT update customer
+  PUT http://localhost:8080/api/customers/13 [200 OK, 399B, 89ms]
+  ✓  update returns 200
+  ✓  updated address is returned
+
+↳ DELETE customer (409 when linked)
+  DELETE http://localhost:8080/api/customers/1 [409 Conflict, 403B, 59ms]
+  ✓  protected delete returns 409
+
+↳ POST create deletable customer
+  POST http://localhost:8080/api/customers [201 Created, 445B, 39ms]
+  ✓  created
+
+↳ DELETE unlinked customer
+  DELETE http://localhost:8080/api/customers/14 [204 No Content, 201B, 63ms]
+  ✓  delete returns 204
+
+❏ Vehicles
+↳ GET all vehicles
+  GET http://localhost:8080/api/vehicles?customerId=&search= [200 OK, 2.41kB, 27ms]
+
+↳ POST create vehicle
+  POST http://localhost:8080/api/vehicles [201 Created, 461B, 69ms]
+  ✓  created
+
+↳ GET vehicle by id
+  GET http://localhost:8080/api/vehicles/14 [200 OK, 428B, 13ms]
+
+↳ PUT update vehicle
+  PUT http://localhost:8080/api/vehicles/14 [200 OK, 428B, 47ms]
+  ✓  update returns 200
+  ✓  updated odometer is returned
+
+↳ DELETE vehicle (409 when linked)
+  DELETE http://localhost:8080/api/vehicles/1 [409 Conflict, 402B, 18ms]
+  ✓  protected delete returns 409
+
+↳ POST duplicate vehicle registration
+  POST http://localhost:8080/api/vehicles [409 Conflict, 389B, 13ms]
+  ✓  duplicate registration returns 409
+  ✓  conflict message explains duplicate
+
+❏ Technicians
+↳ GET all technicians
+  GET http://localhost:8080/api/technicians?availabilityStatus=AVAILABLE [200 OK, 1kB, 13ms]
+
+↳ POST create technician
+  POST http://localhost:8080/api/technicians [201 Created, 439B, 76ms]
+  ✓  created
+
+↳ GET technician by id
+  GET http://localhost:8080/api/technicians/10 [200 OK, 403B, 9ms]
+
+↳ PUT update technician
+  PUT http://localhost:8080/api/technicians/10 [200 OK, 390B, 43ms]
+  ✓  update returns 200
+  ✓  updated skill area is returned
+
+↳ DELETE technician (409 when assigned)
+  DELETE http://localhost:8080/api/technicians/1 [409 Conflict, 404B, 17ms]
+  ✓  protected delete returns 409
+
+❏ Service bookings
+↳ GET all bookings
+  GET http://localhost:8080/api/service-bookings?status=CONFIRMED [200 OK, 1.27kB, 23ms]
+
+↳ POST create confirmed booking
+  POST http://localhost:8080/api/service-bookings [201 Created, 530B, 57ms]
+  ✓  created
+
+↳ GET booking by id
+  GET http://localhost:8080/api/service-bookings/19 [200 OK, 489B, 16ms]
+
+↳ PUT update booking
+  PUT http://localhost:8080/api/service-bookings/19 [200 OK, 505B, 46ms]
+  ✓  update returns 200
+  ✓  updated complaint is returned
+
+↳ POST create secondary booking
+  POST http://localhost:8080/api/service-bookings [201 Created, 535B, 56ms]
+  ✓  created
+
+↳ POST create booking for validation
+  POST http://localhost:8080/api/service-bookings [201 Created, 544B, 58ms]
+  ✓  created
+
+↳ POST cancel booking
+  POST http://localhost:8080/api/service-bookings/20/cancel [200 OK, 496B, 37ms]
+  ✓  cancel returns 200
+  ✓  booking is cancelled
+
+↳ DELETE booking (409 when converted)
+  DELETE http://localhost:8080/api/service-bookings/1 [409 Conflict, 398B, 15ms]
+  ✓  protected delete returns 409
+
+↳ DELETE cancelled booking (204)
+  DELETE http://localhost:8080/api/service-bookings/20 [204 No Content, 201B, 41ms]
+  ✓  delete returns 204
+
+❏ Job cards
+↳ GET all job cards
+  GET http://localhost:8080/api/job-cards?status=OPEN&overdue=false [200 OK, 255B, 14ms]
+
+↳ POST create job card from confirmed booking
+  POST http://localhost:8080/api/job-cards [201 Created, 838B, 196ms]
+  ✓  created
+  ✓  job card opens with calculated estimate
+
+↳ POST invalid labour estimate
+  POST http://localhost:8080/api/job-cards [400 Bad Request, 406B, 17ms]
+  ✓  invalid labour estimate returns 400
+  ✓  validation error is returned
+
+↳ GET job card by id
+  GET http://localhost:8080/api/job-cards/13 [200 OK, 802B, 15ms]
+
+↳ PUT start work
+  PUT http://localhost:8080/api/job-cards/13 [200 OK, 940B, 61ms]
+  ✓  update returns 200
+  ✓  job card is in progress
+
+↳ PUT invalid status transition
+  PUT http://localhost:8080/api/job-cards/13 [409 Conflict, 402B, 9ms]
+  ✓  invalid transition returns 409
+  ✓  transition conflict is explained
+
+↳ PUT complete without notes
+  PUT http://localhost:8080/api/job-cards/13 [409 Conflict, 402B, 10ms]
+  ✓  completion without notes returns 409
+  ✓  notes requirement is explained
+
+↳ PUT complete work (notes required)
+  PUT http://localhost:8080/api/job-cards/13 [200 OK, 1.14kB, 42ms]
+  ✓  update returns 200
+  ✓  job card is completed with notes
+
+↳ PUT deliver job card
+  PUT http://localhost:8080/api/job-cards/13 [200 OK, 1.29kB, 65ms]
+  ✓  update returns 200
+  ✓  job card is delivered
+
+↳ DELETE job card (409 when completed or delivered)
+  DELETE http://localhost:8080/api/job-cards/13 [409 Conflict, 396B, 8ms]
+  ✓  protected delete returns 409
+
+❏ Dashboard and reports
+↳ GET dashboard summary
+  GET http://localhost:8080/api/dashboard/summary [200 OK, 343B, 38ms]
+
+↳ GET job status counts
+  GET http://localhost:8080/api/dashboard/job-status-counts [200 OK, 414B, 21ms]
+
+↳ GET delayed jobs
+  GET http://localhost:8080/api/dashboard/delayed-jobs [200 OK, 937B, 16ms]
+
+↳ GET upcoming jobs
+  GET http://localhost:8080/api/dashboard/upcoming-jobs [200 OK, 1.74kB, 13ms]
+
+↳ GET completed job report
+  GET http://localhost:8080/api/reports/completed-job-cards [200 OK, 10.07kB, 36ms]
+
+┌─────────────────────────┬───────────────────┬──────────────────┐
+│                         │          executed │           failed │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              iterations │                 1 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│                requests │                42 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│            test-scripts │                27 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│      prerequest-scripts │                 3 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              assertions │                40 │                0 │
+├─────────────────────────┴───────────────────┴──────────────────┤
+│ total run duration: 2.9s                                       │
+├────────────────────────────────────────────────────────────────┤
+│ total data received: 25.26kB (approx)                          │
+├────────────────────────────────────────────────────────────────┤
+│ average response time: 52ms [min: 8ms, max: 599ms, s.d.: 91ms] │
+└────────────────────────────────────────────────────────────────┘
+npm warn Unknown env config "tmp". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown global config "tmp". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+(node:33275) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)

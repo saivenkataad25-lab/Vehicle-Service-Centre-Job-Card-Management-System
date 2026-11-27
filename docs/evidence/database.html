@@ -35,16 +35,24 @@ vehicles	vehicle_id	bigint unsigned
 vehicles	registration_number	varchar(30)
 vehicles	customer_id	bigint unsigned</pre></section><section><h2>Row counts</h2><pre>$ mysql vsc_job_card -e "SELECT 'customers' AS table_name, COUNT(*) AS rows_count FROM customers UNION ALL SELECT 'vehicles', COUNT(*) FROM vehicles UNION ALL SELECT 'service_bookings', COUNT(*) FROM service_bookings UNION ALL SELECT 'technicians', COUNT(*) FROM technicians UNION ALL SELECT 'job_cards', COUNT(*) FROM job_cards"
 table_name	rows_count
-customers	5
-vehicles	8
-service_bookings	10
-technicians	5
-job_cards	7</pre></section><section><h2>Foreign-key relationships</h2><pre>$ mysql vsc_job_card -e "SELECT CONSTRAINT_NAME, TABLE_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA='vsc_job_card' AND REFERENCED_TABLE_NAME IS NOT NULL ORDER BY TABLE_NAME, CONSTRAINT_NAME"
+customers	10
+vehicles	15
+service_bookings	22
+technicians	10
+job_cards	14</pre></section><section><h2>Foreign-key relationships</h2><pre>$ mysql vsc_job_card -e "SELECT CONSTRAINT_NAME, TABLE_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA='vsc_job_card' AND REFERENCED_TABLE_NAME IS NOT NULL ORDER BY TABLE_NAME, CONSTRAINT_NAME"
 CONSTRAINT_NAME	TABLE_NAME	COLUMN_NAME	REFERENCED_TABLE_NAME	REFERENCED_COLUMN_NAME
 fk_job_cards_booking	job_cards	booking_id	service_bookings	booking_id
 fk_job_cards_technician	job_cards	technician_id	technicians	technician_id
 fk_service_bookings_vehicle	service_bookings	vehicle_id	vehicles	vehicle_id
-fk_vehicles_customer	vehicles	customer_id	customers	customer_id</pre></section><section><h2>Sample customers</h2><pre>$ mysql vsc_job_card -e "SELECT customer_id, customer_code, full_name, phone FROM customers ORDER BY customer_id LIMIT 3"
+fk_vehicles_customer	vehicles	customer_id	customers	customer_id</pre></section><section><h2>Check constraints</h2><pre>$ mysql vsc_job_card -e "SELECT CONSTRAINT_NAME, TABLE_NAME FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA='vsc_job_card' AND CONSTRAINT_TYPE='CHECK' ORDER BY TABLE_NAME, CONSTRAINT_NAME"
+CONSTRAINT_NAME	TABLE_NAME
+chk_job_cards_labour_estimate	job_cards
+chk_job_cards_promised_date	job_cards
+chk_job_cards_status	job_cards
+chk_service_bookings_preferred_date	service_bookings
+chk_service_bookings_status	service_bookings
+chk_technicians_availability	technicians
+chk_vehicles_year	vehicles</pre></section><section><h2>Sample customers</h2><pre>$ mysql vsc_job_card -e "SELECT customer_id, customer_code, full_name, phone FROM customers ORDER BY customer_id LIMIT 3"
 customer_id	customer_code	full_name	phone
 1	CUST-0001	Amina Yusuf	0712345001
 2	CUST-0002	Brian Kiptoo	0712345002
@@ -64,5 +72,19 @@ technician_id	technician_code	full_name	availability_status
 job_card_id	job_card_number	booking_id	technician_id	job_status	completed_at	delivered_at
 1	JC-2026-0001	1	1	DELIVERED	2026-11-19 15:30:00	2026-11-20 09:00:00
 2	JC-2026-0002	2	3	COMPLETED	2026-11-21 16:00:00	NULL
-3	JC-2026-0003	3	2	IN_PROGRESS	NULL	NULL</pre></section></main></body>
+3	JC-2026-0003	3	2	IN_PROGRESS	NULL	NULL</pre></section><section><h2>Executed constraint-failure transcript</h2><pre>$ . scripts/env.sh &amp;&amp; MYSQL_PWD=&quot;$VSC_DB_PASSWORD&quot; mysql -h &quot;$VSC_DB_HOST&quot; -P &quot;$VSC_DB_PORT&quot; -u &quot;$VSC_DB_USERNAME&quot; &quot;$VSC_DB_NAME&quot; --force &lt; scripts/evidence/database-constraints.sql
+ERROR 1062 (23000) at line 1: Duplicate entry 'CUST-0001' for key 'customers.uq_customers_customer_code'
+ERROR 1452 (23000) at line 4: Cannot add or update a child row: a foreign key constraint fails (`vsc_job_card`.`vehicles`, CONSTRAINT `fk_vehicles_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE RESTRICT ON UPDATE CASCADE)
+ERROR 3819 (HY000) at line 7: Check constraint 'chk_service_bookings_status' is violated.
+ERROR 3819 (HY000) at line 10: Check constraint 'chk_service_bookings_preferred_date' is violated.
+ERROR 1062 (23000) at line 13: Duplicate entry '1' for key 'job_cards.uq_job_cards_booking_id'
+ERROR 3819 (HY000) at line 18: Check constraint 'chk_job_cards_labour_estimate' is violated.
+
+$ mysql -e &quot;SELECT COUNT(*) ...&quot; row counts unchanged
+table_name	rows_count
+customers	7
+vehicles	12
+service_bookings	18
+technicians	9
+job_cards	11</pre></section></main></body>
 </html>

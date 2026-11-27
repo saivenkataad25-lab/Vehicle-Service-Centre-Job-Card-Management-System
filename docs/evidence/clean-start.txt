@@ -1,0 +1,70 @@
+Clean-start verification from a fresh checkout at verification commit 7611778.
+Later commits only adjusted evidence tooling and documentation; application source and setup behaviour are unchanged.
+The checkout reuses the portable toolchain through dependencies/runtime -> .tools and uses an isolated database named vsc_job_card_clean.
+
+$ git clone "/media/kaiser/edrive/vehicle job card management" ".clean-start-tmp/repo"
+Cloning into '.clean-start-tmp/repo'...
+done.
+
+$ cd .clean-start-tmp/repo && git rev-parse --short HEAD && git status --short
+7611778
+
+$ ln -s "/media/kaiser/edrive/vehicle job card management/.tools" dependencies/runtime
+
+$ mysql -u root --execute="DROP DATABASE IF EXISTS vsc_job_card_clean; CREATE DATABASE vsc_job_card_clean CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci; GRANT ALL PRIVILEGES ON vsc_job_card_clean.* TO '<app-user>'@'%'; FLUSH PRIVILEGES;"
+Query OK
+
+$ printf '%s\n' 'VSC_DB_HOST=127.0.0.1' 'VSC_DB_PORT=3307' 'VSC_DB_NAME=vsc_job_card_clean' ... > .env
+
+$ npm run setup
+> bash dependencies/install.sh
+node=v24.20.0
+npm=11.19.0
+java=openjdk version "21.0.13.1" 2026-11-17 LTS
+maven=Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
+mysql=mysql  Ver 8.4.13 for Linux on x86_64 (MySQL Community Server - GPL)
+added 248 packages, and audited 249 packages in 20s
+found 0 vulnerabilities
+DEPENDENCIES_OK
+
+$ npm run db:setup
+> bash scripts/setup-db.sh
+DATABASE_SETUP_OK
+
+$ npm run api:build
+> mvn -f backend/pom.xml -DskipTests package
+BUILD SUCCESS
+Total time: 7.926 s
+
+$ npm run web:build
+> ng build
+Application bundle generation complete.
+Output location: frontend/dist/vehicle-job-card
+
+$ java -jar backend/target/job-card-management-0.0.1-SNAPSHOT.jar --server.port=8091
+Started JobCardManagementApplication
+
+$ API_BASE_URL=http://localhost:8091/api npm run test:api
+API test base: http://localhost:8091/api
+Run date: 2026-11-27T12:41:54.349Z
+PASS T01 Customer create/view/update/read | actual=201/200/200/200; address=2 Updated Road
+PASS T02 Vehicle add/update with customer relationship | actual=201/200/200/200; odometer=12500
+PASS T03 Duplicate registration rejected | actual=status=409; message=Vehicle registration number already exists
+PASS T04 Invalid foreign key rejected | actual=status=404; message=Customer not found with id 999999999
+PASS T05 Booking create and read | actual=201/200; registration=API-307118
+PASS T06 One job card per booking | actual=first=201; second=409
+PASS T07 Technician availability enforced | actual=available=201; unavailable=409
+PASS T08 Backend estimate and negative rejection | actual=estimate=60; negative=400
+PASS T09 Status transitions controlled | actual=start=200; invalid=409; hold=200; resume=200
+PASS T10 Completion notes and delivery timestamp | actual=noNotes=409; withNotes=200; delivered=200; completedAt=true; deliveredAt=true
+PASS T11 Completed/delivered job deletion blocked | actual=status=409
+PASS T12 Dependency deletion blocked and rows retained | actual=statuses=409/409/409
+PASS T14 Dashboard and completed report | actual=summary=200; counts=200; delayed=200; upcoming=200; report=200
+PASS T15 Phone validation | actual=short=400; long=400; valid=201; cleanup=204
+PASS T17 Phone must contain only digits | actual=status=400
+PASS T18 Cancelled booking cannot be reactivated | actual=cancel=200; revert=409
+PASS T19 Completed job locked except delivery | actual=start=200; complete=200; reopen=409; noteEdit=409; deliver=200
+PASS T20 Promised date cannot precede opened date | actual=status=409
+SUMMARY 18/18 checks passed
+
+CLEAN_START_OK
