@@ -5,7 +5,7 @@ erDiagram
   CUSTOMERS ||--o{ VEHICLES : owns
   VEHICLES ||--o{ SERVICE_BOOKINGS : has
   SERVICE_BOOKINGS ||--o| JOB_CARDS : generates
-  TECHNICIANS ||--o{ JOB_CARDS : assigned
+  TECHNICIANS |o--o{ JOB_CARDS : assigned
 
   CUSTOMERS {
     BIGINT customer_id PK
@@ -56,6 +56,8 @@ erDiagram
     DECIMAL labour_estimate
     VARCHAR job_status
     VARCHAR completion_notes
+    DATETIME completed_at
+    DATETIME delivered_at
     JSON service_tasks
     JSON status_history
   }
@@ -65,5 +67,6 @@ erDiagram
 - A customer owns zero or more vehicles.
 - A vehicle has zero or more service bookings.
 - A service booking generates zero or one job card; `job_cards.booking_id` is unique.
-- A technician may be assigned to many job cards over time.
+- A job card has zero or one assigned technician; a technician may be assigned to zero or more job cards.
+- `completed_at` and `delivered_at` are nullable timestamps set on the first transition to `COMPLETED` and `DELIVERED`.
 - Service tasks and status history are JSON columns inside `job_cards`, keeping the design to five tables.

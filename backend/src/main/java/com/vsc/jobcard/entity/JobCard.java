@@ -16,6 +16,7 @@ import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "job_cards")
@@ -52,6 +53,12 @@ public class JobCard {
 
     @Column(name = "completion_notes", length = 2000)
     private String completionNotes;
+
+    @Column(name = "completed_at")
+    private LocalDateTime completedAt;
+
+    @Column(name = "delivered_at")
+    private LocalDateTime deliveredAt;
 
     @Column(name = "service_tasks", nullable = false, columnDefinition = "JSON")
     private String serviceTasksJson;
@@ -129,6 +136,22 @@ public class JobCard {
 
     public void setCompletionNotes(String completionNotes) {
         this.completionNotes = completionNotes;
+    }
+
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
+    }
+
+    public LocalDateTime getDeliveredAt() {
+        return deliveredAt;
+    }
+
+    public void setDeliveredAt(LocalDateTime deliveredAt) {
+        this.deliveredAt = deliveredAt;
     }
 
     public String getServiceTasksJson() {

@@ -11,6 +11,7 @@
     "api": "bash -c '. scripts/env.sh && mvn -f backend/pom.xml spring-boot:run'",
     "api:build": "bash -c '. scripts/env.sh && mvn -f backend/pom.xml -DskipTests package'",
     "web": "npm --prefix frontend start -- --host 127.0.0.1",
-    "web:build": "npm --prefix frontend run build"
+    "web:build": "npm --prefix frontend run build",
+    "test:api": "node scripts/api-tests.mjs"
   }
 }

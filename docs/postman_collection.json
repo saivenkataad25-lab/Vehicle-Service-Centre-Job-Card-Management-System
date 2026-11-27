@@ -11,7 +11,17 @@
     { "key": "technicianId", "value": "1" },
     { "key": "unavailableTechnicianId", "value": "2" },
     { "key": "bookingId", "value": "1" },
-    { "key": "jobCardId", "value": "1" }
+    { "key": "jobCardId", "value": "1" },
+    { "key": "linkedCustomerId", "value": "1" },
+    { "key": "linkedVehicleId", "value": "1" },
+    { "key": "linkedTechnicianId", "value": "1" },
+    { "key": "convertedBookingId", "value": "1" },
+    { "key": "deletableCustomerId", "value": "1" },
+    { "key": "deletableCustomerCode", "value": "CUST-DELETE-0001" },
+    { "key": "secondaryBookingId", "value": "1" },
+    { "key": "secondaryBookingNumber", "value": "BK-2026-0901" },
+    { "key": "validationBookingId", "value": "1" },
+    { "key": "validationBookingNumber", "value": "BK-2026-0902" }
   ],
   "item": [
     {
@@ -54,6 +64,16 @@
         },
         {
           "name": "PUT update customer",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('update returns 200', function () { pm.response.to.have.status(200); });",
+                "pm.test('updated address is returned', function () { if (pm.response.code === 200) pm.expect(pm.response.json().address).to.eql('10 Lake Road, Nairobi'); });"
+              ]
+            }
+          }],
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -67,7 +87,63 @@
         },
         {
           "name": "DELETE customer (409 when linked)",
-          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/customers/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["customers", "{{customerId}}"] } }
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('protected delete returns 409', function () { pm.response.to.have.status(409); });"
+              ]
+            }
+          }],
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/customers/{{linkedCustomerId}}", "host": ["{{baseUrl}}"], "path": ["customers", "{{linkedCustomerId}}"] } }
+        },
+        {
+          "name": "POST create deletable customer",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('deletableCustomerCode', 'CUST-' + Date.now());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('created', function () { pm.response.to.have.status(201); });",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('deletableCustomerId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerCode\": \"{{deletableCustomerCode}}\",\n  \"fullName\": \"Test Customer\",\n  \"phone\": \"0712345999\",\n  \"email\": \"deletable@example.com\",\n  \"address\": \"1 Test Road, Nairobi\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/customers", "host": ["{{baseUrl}}"], "path": ["customers"] }
+          }
+        },
+        {
+          "name": "DELETE unlinked customer",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('delete returns 204', function () { pm.response.to.have.status(204); });"
+              ]
+            }
+          }],
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/customers/{{deletableCustomerId}}", "host": ["{{baseUrl}}"], "path": ["customers", "{{deletableCustomerId}}"] } }
         }
       ]
     },
@@ -107,6 +183,16 @@
         },
         {
           "name": "PUT update vehicle",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('update returns 200', function () { pm.response.to.have.status(200); });",
+                "pm.test('updated odometer is returned', function () { if (pm.response.code === 200) pm.expect(pm.response.json().odometerReading).to.eql(12500); });"
+              ]
+            }
+          }],
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -120,7 +206,39 @@
         },
         {
           "name": "DELETE vehicle (409 when linked)",
-          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/vehicles/{{vehicleId}}", "host": ["{{baseUrl}}"], "path": ["vehicles", "{{vehicleId}}"] } }
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('protected delete returns 409', function () { pm.response.to.have.status(409); });"
+              ]
+            }
+          }],
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/vehicles/{{linkedVehicleId}}", "host": ["{{baseUrl}}"], "path": ["vehicles", "{{linkedVehicleId}}"] } }
+        },
+        {
+          "name": "POST duplicate vehicle registration",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('duplicate registration returns 409', function () { pm.response.to.have.status(409); });",
+                "pm.test('conflict message explains duplicate', function () { if (pm.response.code === 409) pm.expect(pm.response.json().message).to.include('already exists'); });"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"registrationNumber\": \"KAF-111A\",\n  \"make\": \"Honda\",\n  \"model\": \"Fit\",\n  \"year\": 2021,\n  \"fuelType\": \"PETROL\",\n  \"customerId\": {{customerId}},\n  \"odometerReading\": 5000\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/vehicles", "host": ["{{baseUrl}}"], "path": ["vehicles"] }
+          }
         }
       ]
     },
@@ -160,6 +278,16 @@
         },
         {
           "name": "PUT update technician",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('update returns 200', function () { pm.response.to.have.status(200); });",
+                "pm.test('updated skill area is returned', function () { if (pm.response.code === 200) pm.expect(pm.response.json().skillArea).to.eql('Brakes'); });"
+              ]
+            }
+          }],
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -173,7 +301,16 @@
         },
         {
           "name": "DELETE technician (409 when assigned)",
-          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/technicians/{{technicianId}}", "host": ["{{baseUrl}}"], "path": ["technicians", "{{technicianId}}"] } }
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('protected delete returns 409', function () { pm.response.to.have.status(409); });"
+              ]
+            }
+          }],
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/technicians/{{linkedTechnicianId}}", "host": ["{{baseUrl}}"], "path": ["technicians", "{{linkedTechnicianId}}"] } }
         }
       ]
     },
@@ -213,6 +350,16 @@
         },
         {
           "name": "PUT update booking",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('update returns 200', function () { pm.response.to.have.status(200); });",
+                "pm.test('updated complaint is returned', function () { if (pm.response.code === 200) pm.expect(pm.response.json().complaint).to.eql('Routine service and brake check'); });"
+              ]
+            }
+          }],
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -225,12 +372,112 @@
           }
         },
         {
+          "name": "POST create secondary booking",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('secondaryBookingNumber', 'BKS-' + Date.now());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('created', function () { pm.response.to.have.status(201); });",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('secondaryBookingId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingNumber\": \"{{secondaryBookingNumber}}\",\n  \"vehicleId\": {{vehicleId}},\n  \"bookingDate\": \"2026-11-26\",\n  \"preferredDate\": \"2026-12-05\",\n  \"complaint\": \"Cancellation test\",\n  \"bookingStatus\": \"PENDING\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/service-bookings", "host": ["{{baseUrl}}"], "path": ["service-bookings"] }
+          }
+        },
+        {
+          "name": "POST create booking for validation",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('validationBookingNumber', 'BKV-' + Date.now());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('created', function () { pm.response.to.have.status(201); });",
+                  "if (pm.response.code === 201) pm.collectionVariables.set('validationBookingId', pm.response.json().id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingNumber\": \"{{validationBookingNumber}}\",\n  \"vehicleId\": {{vehicleId}},\n  \"bookingDate\": \"2026-11-26\",\n  \"preferredDate\": \"2026-12-06\",\n  \"complaint\": \"Estimate validation test\",\n  \"bookingStatus\": \"CONFIRMED\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/service-bookings", "host": ["{{baseUrl}}"], "path": ["service-bookings"] }
+          }
+        },
+        {
           "name": "POST cancel booking",
-          "request": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/service-bookings/{{bookingId}}/cancel", "host": ["{{baseUrl}}"], "path": ["service-bookings", "{{bookingId}}", "cancel"] } }
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('cancel returns 200', function () { pm.response.to.have.status(200); });",
+                "pm.test('booking is cancelled', function () { if (pm.response.code === 200) pm.expect(pm.response.json().bookingStatus).to.eql('CANCELLED'); });"
+              ]
+            }
+          }],
+          "request": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/service-bookings/{{secondaryBookingId}}/cancel", "host": ["{{baseUrl}}"], "path": ["service-bookings", "{{secondaryBookingId}}", "cancel"] } }
         },
         {
           "name": "DELETE booking (409 when converted)",
-          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/service-bookings/{{bookingId}}", "host": ["{{baseUrl}}"], "path": ["service-bookings", "{{bookingId}}"] } }
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('protected delete returns 409', function () { pm.response.to.have.status(409); });"
+              ]
+            }
+          }],
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/service-bookings/{{convertedBookingId}}", "host": ["{{baseUrl}}"], "path": ["service-bookings", "{{convertedBookingId}}"] } }
+        },
+        {
+          "name": "DELETE cancelled booking (204)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('delete returns 204', function () { pm.response.to.have.status(204); });"
+              ]
+            }
+          }],
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/service-bookings/{{secondaryBookingId}}", "host": ["{{baseUrl}}"], "path": ["service-bookings", "{{secondaryBookingId}}"] } }
         }
       ]
     },
@@ -249,6 +496,7 @@
               "type": "text/javascript",
               "exec": [
                 "pm.test('created', function () { pm.response.to.have.status(201); });",
+                "pm.test('job card opens with calculated estimate', function () { if (pm.response.code === 201) { var body = pm.response.json(); pm.expect(body.jobStatus).to.eql('OPEN'); pm.expect(body.labourEstimate).to.eql(67.5); } });",
                 "if (pm.response.code === 201) pm.collectionVariables.set('jobCardId', pm.response.json().id);"
               ]
             }
@@ -265,11 +513,44 @@
           }
         },
         {
+          "name": "POST invalid labour estimate",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('invalid labour estimate returns 400', function () { pm.response.to.have.status(400); });",
+                "pm.test('validation error is returned', function () { if (pm.response.code === 400) { var body = pm.response.json(); pm.expect(body.message).to.eql('Validation failed'); pm.expect(body.fieldErrors).to.be.an('object'); } });"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingId\": {{validationBookingId}},\n  \"openedDate\": \"2026-11-26\",\n  \"promisedDate\": \"2026-12-03\",\n  \"serviceTasks\": [\n    {\n      \"taskName\": \"Oil change\",\n      \"description\": \"Negative hours must be rejected\",\n      \"estimatedHours\": -1,\n      \"hourlyRate\": 45.00,\n      \"amount\": 0\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/job-cards", "host": ["{{baseUrl}}"], "path": ["job-cards"] }
+          }
+        },
+        {
           "name": "GET job card by id",
           "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/job-cards/{{jobCardId}}", "host": ["{{baseUrl}}"], "path": ["job-cards", "{{jobCardId}}"] } }
         },
         {
           "name": "PUT start work",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('update returns 200', function () { pm.response.to.have.status(200); });",
+                "pm.test('job card is in progress', function () { if (pm.response.code === 200) pm.expect(pm.response.json().jobStatus).to.eql('IN_PROGRESS'); });"
+              ]
+            }
+          }],
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -282,7 +563,63 @@
           }
         },
         {
+          "name": "PUT invalid status transition",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('invalid transition returns 409', function () { pm.response.to.have.status(409); });",
+                "pm.test('transition conflict is explained', function () { if (pm.response.code === 409) pm.expect(pm.response.json().message).to.include('Invalid job status transition'); });"
+              ]
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"technicianId\": {{technicianId}},\n  \"openedDate\": \"2026-11-26\",\n  \"promisedDate\": \"2026-12-03\",\n  \"jobStatus\": \"DELIVERED\",\n  \"completionNotes\": null,\n  \"serviceTasks\": [\n    {\n      \"taskName\": \"Oil change\",\n      \"description\": \"Replace engine oil and filter\",\n      \"estimatedHours\": 1.5,\n      \"hourlyRate\": 45.00,\n      \"amount\": 0\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/job-cards/{{jobCardId}}", "host": ["{{baseUrl}}"], "path": ["job-cards", "{{jobCardId}}"] }
+          }
+        },
+        {
+          "name": "PUT complete without notes",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('completion without notes returns 409', function () { pm.response.to.have.status(409); });",
+                "pm.test('notes requirement is explained', function () { if (pm.response.code === 409) pm.expect(pm.response.json().message).to.include('Completion notes are required'); });"
+              ]
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"technicianId\": {{technicianId}},\n  \"openedDate\": \"2026-11-26\",\n  \"promisedDate\": \"2026-12-03\",\n  \"jobStatus\": \"COMPLETED\",\n  \"completionNotes\": null,\n  \"serviceTasks\": [\n    {\n      \"taskName\": \"Oil change\",\n      \"description\": \"Replace engine oil and filter\",\n      \"estimatedHours\": 1.5,\n      \"hourlyRate\": 45.00,\n      \"amount\": 0\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/job-cards/{{jobCardId}}", "host": ["{{baseUrl}}"], "path": ["job-cards", "{{jobCardId}}"] }
+          }
+        },
+        {
           "name": "PUT complete work (notes required)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('update returns 200', function () { pm.response.to.have.status(200); });",
+                "pm.test('job card is completed with notes', function () { if (pm.response.code === 200) { var body = pm.response.json(); pm.expect(body.jobStatus).to.eql('COMPLETED'); pm.expect(body.completionNotes).to.be.a('string').and.not.empty; } });"
+              ]
+            }
+          }],
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -295,7 +632,39 @@
           }
         },
         {
-          "name": "DELETE job card (409 when completed)",
+          "name": "PUT deliver job card",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('update returns 200', function () { pm.response.to.have.status(200); });",
+                "pm.test('job card is delivered', function () { if (pm.response.code === 200) pm.expect(pm.response.json().jobStatus).to.eql('DELIVERED'); });"
+              ]
+            }
+          }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"technicianId\": {{technicianId}},\n  \"openedDate\": \"2026-11-26\",\n  \"promisedDate\": \"2026-12-03\",\n  \"jobStatus\": \"DELIVERED\",\n  \"completionNotes\": \"Oil and filter replaced; test drive completed.\",\n  \"serviceTasks\": [\n    {\n      \"taskName\": \"Oil change\",\n      \"description\": \"Replace engine oil and filter\",\n      \"estimatedHours\": 1.5,\n      \"hourlyRate\": 45.00,\n      \"amount\": 0\n    }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/job-cards/{{jobCardId}}", "host": ["{{baseUrl}}"], "path": ["job-cards", "{{jobCardId}}"] }
+          }
+        },
+        {
+          "name": "DELETE job card (409 when completed or delivered)",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('protected delete returns 409', function () { pm.response.to.have.status(409); });"
+              ]
+            }
+          }],
           "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/job-cards/{{jobCardId}}", "host": ["{{baseUrl}}"], "path": ["job-cards", "{{jobCardId}}"] } }
         }
       ]

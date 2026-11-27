@@ -2,7 +2,7 @@
 
 Base path: `/api`
 
-All dates are ISO date strings (`YYYY-MM-DD`). Timestamps in status history are ISO local date-times (`YYYY-MM-DDTHH:mm:ss`). Monetary values are JSON numbers serialized from Java `BigDecimal`.
+All dates are ISO date strings (`YYYY-MM-DD`). Timestamps in status history and the job card `completedAt` / `deliveredAt` fields are ISO local date-times (`YYYY-MM-DDTHH:mm:ss`). Monetary values are JSON numbers serialized from Java `BigDecimal`.
 
 ## Standard error response
 ```json
@@ -213,9 +213,10 @@ Request: `JobCardUpdateRequest`. Returns `200 OK`.
 Rules:
 - Status transitions: `OPEN -> IN_PROGRESS | ON_HOLD`, `IN_PROGRESS -> ON_HOLD | COMPLETED`, `ON_HOLD -> IN_PROGRESS`, `COMPLETED -> DELIVERED`, `DELIVERED -> none`.
 - Same-status updates are allowed for non-terminal statuses.
-- `COMPLETED` requires non-blank `completionNotes`.
+- `COMPLETED` requires non-blank `completionNotes`; blank notes on later updates keep the saved notes.
 - `DELIVERED` cannot be edited.
-- Technician changes follow the same availability rule.
+- `completedAt` is set when a card first becomes `COMPLETED`, and `deliveredAt` when it first becomes `DELIVERED`; both are preserved on same-status or unrelated updates.
+- A job card may have no technician (`technicianId: null`); supplied technicians follow the same availability rule.
 - Backend recalculates amounts and estimate.
 
 ### DELETE /api/job-cards/{id}
@@ -282,8 +283,25 @@ JobCardResponse {
   "labourEstimate": 67.50,
   "jobStatus": "OPEN",
   "completionNotes": null,
-  "serviceTasks": [],
-  "statusHistory": []
+  "completedAt": null,
+  "deliveredAt": null,
+  "serviceTasks": [
+    {
+      "taskName": "Oil change",
+      "description": "Replace engine oil and filter",
+      "estimatedHours": 1.5,
+      "hourlyRate": 45.00,
+      "amount": 67.50
+    }
+  ],
+  "statusHistory": [
+    {
+      "fromStatus": null,
+      "toStatus": "OPEN",
+      "changedAt": "2026-11-26T10:15:30",
+      "note": "Job card opened"
+    }
+  ]
 }
 ```
 

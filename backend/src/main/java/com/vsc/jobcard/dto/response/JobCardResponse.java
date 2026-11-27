@@ -4,6 +4,7 @@ import com.vsc.jobcard.enums.JobStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record JobCardResponse(
@@ -18,6 +19,8 @@ public record JobCardResponse(
         BigDecimal labourEstimate,
         JobStatus jobStatus,
         String completionNotes,
+        LocalDateTime completedAt,
+        LocalDateTime deliveredAt,
         List<ServiceTaskResponse> serviceTasks,
         List<StatusHistoryEntryResponse> statusHistory
 ) {

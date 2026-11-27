@@ -140,7 +140,7 @@ public class JobCardService {
         Technician technician = resolveTechnicianChange(card, request.technicianId());
         List<ServiceTaskResponse> tasks = calculateTasks(request.serviceTasks());
         BigDecimal labourEstimate = sumAmounts(tasks);
-        String completionNotes = resolveCompletionNotes(card, request.completionNotes(), targetStatus);
+        String completionNotes = resolveCompletionNotes(card, request.completionNotes());
         if (targetStatus == JobStatus.COMPLETED && isBlank(completionNotes)) {
             throw new ConflictException("Completion notes are required when completing a job card");
         }
@@ -148,6 +148,11 @@ public class JobCardService {
         List<StatusHistoryEntryResponse> history = readHistory(card.getStatusHistoryJson());
         if (currentStatus != targetStatus) {
             history.add(historyEntry(currentStatus, targetStatus, "Job card status changed to " + targetStatus));
+            if (targetStatus == JobStatus.COMPLETED) {
+                card.setCompletedAt(LocalDateTime.now());
+            } else if (targetStatus == JobStatus.DELIVERED) {
+                card.setDeliveredAt(LocalDateTime.now());
+            }
         }
 
         card.setTechnician(technician);
@@ -221,11 +226,11 @@ public class JobCardService {
         };
     }
 
-    private String resolveCompletionNotes(JobCard card, String requestedNotes, JobStatus targetStatus) {
+    private String resolveCompletionNotes(JobCard card, String requestedNotes) {
         if (!isBlank(requestedNotes)) {
             return requestedNotes.trim();
         }
-        if (targetStatus == JobStatus.COMPLETED && !isBlank(card.getCompletionNotes())) {
+        if (!isBlank(card.getCompletionNotes())) {
             return card.getCompletionNotes();
         }
         return null;
@@ -336,6 +341,8 @@ public class JobCardService {
                 card.getLabourEstimate(),
                 card.getJobStatus(),
                 card.getCompletionNotes(),
+                card.getCompletedAt(),
+                card.getDeliveredAt(),
                 readTasks(card.getServiceTasksJson()),
                 readHistory(card.getStatusHistoryJson())
         );

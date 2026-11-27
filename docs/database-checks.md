@@ -20,6 +20,14 @@ MYSQL_PWD="$VSC_DB_PASSWORD" mysql -h 127.0.0.1 -P "$VSC_DB_PORT" -u "$VSC_DB_US
 
 Expected: `customers=3`, `vehicles=5`, `technicians=3`, `bookings=7`, `job_cards=5`.
 
+## Job card schema notes
+`job_cards.technician_id` is nullable (`FK`): a job card has zero or one technician, and a technician may have zero or more job cards. `completed_at` and `delivered_at` are nullable `DATETIME` columns set on the first transition to `COMPLETED` and `DELIVERED` and preserved by later updates.
+
+```bash
+MYSQL_PWD="$VSC_DB_PASSWORD" mysql -h 127.0.0.1 -P "$VSC_DB_PORT" -u "$VSC_DB_USERNAME" "$VSC_DB_NAME" \
+  -e "SELECT job_card_number, job_status, technician_id, completed_at, delivered_at FROM job_cards ORDER BY job_card_id;"
+```
+
 ## Duplicate registration number must fail
 ```bash
 MYSQL_PWD="$VSC_DB_PASSWORD" mysql -h 127.0.0.1 -P "$VSC_DB_PORT" -u "$VSC_DB_USERNAME" "$VSC_DB_NAME" \

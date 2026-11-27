@@ -20,12 +20,24 @@ import { DataTableComponent, ErrorMessageComponent, PageHeaderComponent, StatusB
         <app-error-message [message]="error()" [canRetry]="true" (retry)="load()" />
       } @else if (loading()) {
         <div class="stat-grid">
-          @for (item of [1, 2, 3, 4]; track item) {
+          @for (item of [1, 2, 3, 4, 5, 6, 7]; track item) {
             <div class="stat"><div class="skeleton-row"></div></div>
           }
         </div>
       } @else {
         <div class="stat-grid">
+          <a class="stat stat-link" routerLink="/customers">
+            <span class="stat-label">Total customers</span>
+            <span class="stat-value num">{{ summary()?.customers ?? 0 }}</span>
+          </a>
+          <a class="stat stat-link" routerLink="/vehicles">
+            <span class="stat-label">Vehicles</span>
+            <span class="stat-value num">{{ summary()?.vehicles ?? 0 }}</span>
+          </a>
+          <a class="stat stat-link" routerLink="/bookings">
+            <span class="stat-label">Bookings</span>
+            <span class="stat-value num">{{ summary()?.bookings ?? 0 }}</span>
+          </a>
           <a class="stat stat-link" routerLink="/job-cards">
             <span class="stat-label">Job cards</span>
             <span class="stat-value num">{{ summary()?.jobCards ?? 0 }}</span>

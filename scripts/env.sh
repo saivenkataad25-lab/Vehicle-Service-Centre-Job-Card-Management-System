@@ -1,4 +1,11 @@
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+if [ -f "$PROJECT_ROOT/.env" ]; then
+  set -a
+  . "$PROJECT_ROOT/.env"
+  set +a
+fi
+
 VSC_RUNTIME_ROOT="$PROJECT_ROOT/.tools"
 
 if [ -d "$PROJECT_ROOT/dependencies/runtime" ]; then

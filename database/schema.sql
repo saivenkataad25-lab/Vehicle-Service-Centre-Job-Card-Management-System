@@ -76,6 +76,8 @@ CREATE TABLE job_cards (
   labour_estimate DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   job_status VARCHAR(20) NOT NULL,
   completion_notes VARCHAR(2000) NULL,
+  completed_at DATETIME NULL,
+  delivered_at DATETIME NULL,
   service_tasks JSON NOT NULL,
   status_history JSON NOT NULL,
   PRIMARY KEY (job_card_id),

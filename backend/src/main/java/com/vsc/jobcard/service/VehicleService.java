@@ -37,7 +37,8 @@ public class VehicleService {
                 .filter(vehicle -> customerId == null || vehicle.getCustomer().getId().equals(customerId))
                 .filter(vehicle -> term.isEmpty() || normalize(vehicle.getRegistrationNumber()).contains(term)
                         || normalize(vehicle.getMake()).contains(term)
-                        || normalize(vehicle.getModel()).contains(term))
+                        || normalize(vehicle.getModel()).contains(term)
+                        || normalize(vehicle.getCustomer().getFullName()).contains(term))
                 .map(this::toResponse)
                 .toList();
     }

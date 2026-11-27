@@ -29,8 +29,8 @@ Full-stack CRUD and workflow application for customers, vehicles, service bookin
 ```text
 backend/        Spring Boot source and pom.xml
 frontend/       Angular source, package.json, package-lock.json
-database/       schema.sql, sample_data.sql, ER diagram
-docs/           API contract, API summary, Postman collection, test matrix, evidence
+database/       schema.sql and sample_data.sql; ER diagram is in docs/er-diagram.md
+docs/           API contract, API summary, Postman collection, test matrix, supervisor confirmations, evidence
 dependencies/   single dependency setup entry point and versions
 scripts/        local startup, shutdown, and environment scripts
 api/            Vercel serverless API proxy
@@ -48,7 +48,7 @@ All dependency declarations and setup commands are collected under `dependencies
 cp .env.example .env
 ```
 
-Edit `.env` and set your own `VSC_DB_PASSWORD` and `VSC_DB_ROOT_PASSWORD`.
+Edit `.env` and set your own `VSC_DB_PASSWORD` and `VSC_DB_ROOT_PASSWORD`. `scripts/env.sh` now loads `.env` automatically for the npm-driven setup, database, and backend commands, so no manual `source` step is needed.
 
 ### 2. Install dependencies
 
@@ -159,19 +159,27 @@ Status flow: `OPEN → IN_PROGRESS | ON_HOLD`, `IN_PROGRESS → ON_HOLD | COMPLE
 - [`docs/test-matrix.md`](docs/test-matrix.md) — requirements test matrix and evidence index
 - [`docs/evidence/test-results.txt`](docs/evidence/test-results.txt) — API test transcript
 - [`docs/postman_collection.json`](docs/postman_collection.json) — importable Postman collection
+- `npm run test:api` — reproducible API checks; after restarting the backend, run `npm run test:api -- verify` to confirm persistence
 
-| # | Required evidence | Screenshot |
-|---|---|---|
-| 1 | Project setup | <img src="docs/evidence/01-setup.png" width="360" alt="Project setup"> |
-| 2 | Dashboard | <img src="docs/evidence/02-dashboard.png" width="360" alt="Dashboard"> |
-| 3 | Create | <img src="docs/evidence/03-create.png" width="360" alt="Create form"> |
-| 4 | Read | <img src="docs/evidence/04-read.png" width="360" alt="Read list"> |
-| 5 | Update | <img src="docs/evidence/05-update.png" width="360" alt="Update result"> |
-| 6 | Status / delete rule | <img src="docs/evidence/06-status.png" width="360" alt="Status history"> |
-| 7 | API evidence | <img src="docs/evidence/07-api.png" width="360" alt="API evidence"> |
-| 8 | Database | <img src="docs/evidence/08-database.png" width="360" alt="Database evidence"> |
+| # | Required evidence | Thumbnail | Full size |
+|---|---|---|---|
+| 1 | Project setup | <img src="docs/evidence/01-setup.png" width="360" alt="Project setup"> | [01-setup.png](docs/evidence/01-setup.png) |
+| 2 | Dashboard | <img src="docs/evidence/02-dashboard.png" width="360" alt="Dashboard"> | [02-dashboard.png](docs/evidence/02-dashboard.png) |
+| 3 | Create | <img src="docs/evidence/03-create.png" width="360" alt="Create form"> | [03-create.png](docs/evidence/03-create.png) |
+| 4 | Read | <img src="docs/evidence/04-read.png" width="360" alt="Read list"> | [04-read.png](docs/evidence/04-read.png) |
+| 5 | Update | <img src="docs/evidence/05-update.png" width="360" alt="Update result"> | [05-update.png](docs/evidence/05-update.png) |
+| 6 | Status / delete rule | <img src="docs/evidence/06-status.png" width="360" alt="Status history"> | [06-status.png](docs/evidence/06-status.png) |
+| 7 | API evidence | <img src="docs/evidence/07-api.png" width="360" alt="API evidence"> | [07-api.png](docs/evidence/07-api.png) |
+| 8 | Database | <img src="docs/evidence/08-database.png" width="360" alt="Database evidence"> | [08-database.png](docs/evidence/08-database.png) |
 
-Full-size screenshots are in [`docs/evidence/`](docs/evidence/).
+## Submission readiness
+
+- Repository: https://github.com/saivenkataad25-lab/Vehicle-Service-Centre-Job-Card-Management-System.git
+- A ZIP can be supplied if faculty requests one.
+- Optional deployment: Vercel needs `BACKEND_URL` set to the hosted API base URL; see [Vercel deployment](#vercel-deployment).
+- Documentation index: [`docs/README.md`](docs/README.md)
+- Decisions pending faculty confirmation: [`docs/supervisor-confirmations.md`](docs/supervisor-confirmations.md)
+- Component guides: [`backend/README.md`](backend/README.md) and [`database/README.md`](database/README.md)
 
 ## Troubleshooting
 
@@ -180,4 +188,3 @@ Full-size screenshots are in [`docs/evidence/`](docs/evidence/).
 - Angular `/api` returns `404`: start the backend and use `npm run web` so the dev-server proxy is active.
 - `Phone must be exactly 10 characters.`: the phone value is shorter or longer than 10 characters.
 - `409 Conflict`: expected for invalid status transitions, duplicate registrations, protected deletions, or completing without notes.
-

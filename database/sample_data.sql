@@ -34,30 +34,37 @@ INSERT INTO job_cards (
   labour_estimate,
   job_status,
   completion_notes,
+  completed_at,
+  delivered_at,
   service_tasks,
   status_history
 ) VALUES
   (1, 'JC-2026-0001', 1, 1, '2026-11-18', '2026-11-20', 117.50, 'DELIVERED',
    'Engine noise resolved after oil service and diagnostic check.',
+   '2026-11-19 15:30:00', '2026-11-20 09:00:00',
    '[{"taskName":"Engine oil change","description":"Drain and replace engine oil and filter","estimatedHours":1.5,"hourlyRate":45.00,"amount":67.50},{"taskName":"Engine diagnostic","description":"Scan and clear fault codes","estimatedHours":1.0,"hourlyRate":50.00,"amount":50.00}]',
    '[{"fromStatus":null,"toStatus":"OPEN","changedAt":"2026-11-18T08:15:00","note":"Job card opened"},{"fromStatus":"OPEN","toStatus":"IN_PROGRESS","changedAt":"2026-11-18T10:00:00","note":"Work started"},{"fromStatus":"IN_PROGRESS","toStatus":"COMPLETED","changedAt":"2026-11-19T15:30:00","note":"All tasks completed"},{"fromStatus":"COMPLETED","toStatus":"DELIVERED","changedAt":"2026-11-20T09:00:00","note":"Vehicle handed to customer"}]'),
 
   (2, 'JC-2026-0002', 2, 3, '2026-11-20', '2026-11-22', 130.00, 'COMPLETED',
    'Air conditioning system serviced and cooling restored.',
+   '2026-11-21 16:00:00', NULL,
    '[{"taskName":"AC gas refill","description":"Recharge refrigerant and leak check","estimatedHours":2.0,"hourlyRate":55.00,"amount":110.00},{"taskName":"Cabin filter replacement","description":"Replace clogged cabin filter","estimatedHours":0.5,"hourlyRate":40.00,"amount":20.00}]',
    '[{"fromStatus":null,"toStatus":"OPEN","changedAt":"2026-11-20T07:45:00","note":"Job card opened"},{"fromStatus":"OPEN","toStatus":"IN_PROGRESS","changedAt":"2026-11-20T11:00:00","note":"Work started"},{"fromStatus":"IN_PROGRESS","toStatus":"COMPLETED","changedAt":"2026-11-21T16:00:00","note":"Cooling restored"}]'),
 
   (3, 'JC-2026-0003', 3, 2, '2026-11-18', '2026-11-20', 150.00, 'IN_PROGRESS',
    NULL,
+   NULL, NULL,
    '[{"taskName":"Brake inspection","description":"Inspect front and rear brake components","estimatedHours":2.5,"hourlyRate":60.00,"amount":150.00}]',
    '[{"fromStatus":null,"toStatus":"OPEN","changedAt":"2026-11-18T08:00:00","note":"Job card opened"},{"fromStatus":"OPEN","toStatus":"IN_PROGRESS","changedAt":"2026-11-18T09:30:00","note":"Inspection started"}]'),
 
   (4, 'JC-2026-0004', 5, NULL, '2026-11-25', '2026-12-01', 110.00, 'ON_HOLD',
    NULL,
+   NULL, NULL,
    '[{"taskName":"Tyre replacement","description":"Replace two front tyres","estimatedHours":1.0,"hourlyRate":35.00,"amount":35.00},{"taskName":"Wheel alignment","description":"Perform four-wheel alignment","estimatedHours":1.5,"hourlyRate":50.00,"amount":75.00}]',
    '[{"fromStatus":null,"toStatus":"OPEN","changedAt":"2026-11-25T10:00:00","note":"Job card opened"},{"fromStatus":"OPEN","toStatus":"ON_HOLD","changedAt":"2026-11-25T14:00:00","note":"Waiting for customer approval"}]'),
 
   (5, 'JC-2026-0005', 7, 1, '2026-11-25', '2026-11-28', 33.75, 'OPEN',
    NULL,
+   NULL, NULL,
    '[{"taskName":"Battery replacement","description":"Test and replace vehicle battery","estimatedHours":0.75,"hourlyRate":45.00,"amount":33.75}]',
    '[{"fromStatus":null,"toStatus":"OPEN","changedAt":"2026-11-25T13:00:00","note":"Job card opened"}]');

@@ -4,118 +4,82 @@
 <style>
 :root { color-scheme: dark; font-family: Inter, system-ui, sans-serif; background: #070a10; color: #e8edf6; }
 body { margin: 0; padding: 40px; }
-main { max-width: 1100px; margin: auto; }
+main { max-width: 1180px; margin: auto; }
 h1 { font-size: 28px; margin: 0 0 8px; }
 p.secondary { color: #9aa7bb; margin: 0 0 24px; }
 section { background: #0f1520; border: 1px solid #263044; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
 h2 { font-size: 16px; margin: 0 0 12px; color: #8fc2ff; }
 pre { margin: 0; white-space: pre-wrap; word-break: break-word; color: #d7e2f2; font-size: 12px; line-height: 1.5; }
-table { border-collapse: collapse; width: 100%; font-size: 13px; }
-th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #263044; }
-th { color: #9aa7bb; font-weight: 500; }
 </style></head>
-<body><main><h1>API verification evidence</h1><p class="secondary">Vehicle Service Centre Job Card Management System · Phase 7 evidence · 2026-11-26</p>
-<section><h2>GET / POST / PUT / DELETE / status behaviour</h2><pre>Phase 7 API test matrix run: 2026-11-26T08:53:56.957Z
-Base URL: http://localhost:8080/api
+<body><main><h1>API verification evidence</h1><p class="secondary">Vehicle Service Centre Job Card Management System · Phase 7 evidence · 2026-11-27</p>
+<section><h2>Reproducible API test transcript</h2><pre>Command: node scripts/api-tests.mjs (npm run test:api)
+T16 UI workflow evidence: docs/evidence/03-create.png through 06-status.png
+T13 verification command: npm run test:api -- verify (restart backend first)
+API test base: http://localhost:8080/api
+Run date: 2026-11-27T11:49:00.919Z
+PASS T01 Customer create/view/update/read | expected=201/200/200/200 and updated address retained | actual=201/200/200/200; address=2 Updated Road
+PASS T02 Vehicle add/update with customer relationship | expected=201/200/200/200 and odometer retained | actual=201/200/200/200; customerId=4; odometer=12500
+PASS T03 Duplicate registration rejected | expected=409 with registration message | actual=status=409; message=Vehicle registration number already exists
+PASS T04 Invalid foreign key rejected | expected=404 with customer message | actual=status=404; message=Customer not found with id 999999999
+PASS T05 Booking create and read | expected=201/200 with correct vehicle | actual=201/200; registration=API-136367
+PASS T06 One job card per booking | expected=first 201, second 409 because booking is no longer CONFIRMED or job card exists | actual=first=201; second=409; message=Job card can only be created from a CONFIRMED booking
+PASS T07 Technician availability enforced | expected=available 201, unavailable 409 | actual=available=201; unavailable=409; message=Unavailable technician cannot be newly assigned
+PASS T08 Backend estimate and negative rejection | expected=estimate 60.00; negative hours 400 | actual=estimate=60; negative=400
+PASS T09 Status transitions controlled | expected=allowed 200; invalid 409 | actual=start=200; invalid=409; hold=200; resume=200
+PASS T10 Completion notes and delivery timestamp | expected=no notes 409; with notes 200; delivery 200 | actual=noNotes=409; withNotes=200; delivered=200; completedAt=true; deliveredAt=true
+PASS T11 Completed/delivered job deletion blocked | expected=409 conflict | actual=status=409; message=Completed or delivered job card cannot be deleted
+PASS T12 Dependency deletion blocked and rows retained | expected=three 409 responses and unchanged counts | actual=statuses=409/409/409; before={&quot;customers&quot;:4,&quot;vehicles&quot;:7,&quot;technicians&quot;:5}; after={&quot;customers&quot;:4,&quot;vehicles&quot;:7,&quot;technicians&quot;:5}
+PASS T14 Dashboard and completed report | expected=all dashboard/report endpoints 200 with live data | actual=summary=200; counts=200; delayed=200; upcoming=200; report=200; reportContainsJob=true
+PASS T15 Phone validation | expected=9 and 11 digits 400; 10 digits 201 | actual=short=400; long=400; valid=201; cleanup=204
+SUMMARY 14/14 checks passed
 
-T01 | Customer create/view/edit/read
-  Expected: 201/200/200/200 and updated address persisted
-  Actual:   200/200/200; address=2 Updated Road
-  Result:   PASS
-  Evidence: POST/GET/PUT/GET /api/customers
-
-T02 | Vehicle add/update with customer relationship
-  Expected: 201/200/200/200 and odometer persisted
-  Actual:   201/200/200/200; customerId=19; odometer=12500
-  Result:   PASS
-  Evidence: POST/GET/PUT/GET /api/vehicles
-
-T03 | Duplicate registration number
-  Expected: rejected and no duplicate row
-  Actual:   status=409; message=Vehicle registration number already exists
-  Result:   PASS
-  Evidence: POST /api/vehicles
-
-T04 | Vehicle with non-existent customer
-  Expected: rejected with clear message
-  Actual:   status=404; message=Customer not found with id 999999999
-  Result:   PASS
-  Evidence: POST /api/vehicles
-
-T05 | Create and confirm booking
-  Expected: 201/200 with matching vehicle details
-  Actual:   200; vehicle=P7-232898; description=Toyota Hilux
-  Result:   PASS
-  Evidence: POST/GET /api/service-bookings
-
-T06 | Second job card for same booking
-  Expected: first 201, second rejected
-  Actual:   first=JC-2026-0014; second=409; message=Job card can only be created from a CONFIRMED booking
-  Result:   PASS
-  Evidence: POST /api/job-cards
-
-T07 | Technician availability on allocation
-  Expected: available accepted, unavailable rejected
-  Actual:   available=10; unavailable=409; message=Unavailable technician cannot be newly assigned
-  Result:   PASS
-  Evidence: POST /api/job-cards
-
-T08 | Estimate calculation and negative hours
-  Expected: backend estimate 60.00; negative rejected
-  Actual:   estimate=60; negative=400
-  Result:   PASS
-  Evidence: POST/PUT /api/job-cards
-
-T09 | Allowed and invalid status transitions
-  Expected: allowed 200; invalid 409
-  Actual:   start=200; invalid=409; hold=200; resume=200
-  Result:   PASS
-  Evidence: PUT /api/job-cards/{id}
-
-T10 | Completion requires notes
-  Expected: without notes 409; with notes 200
-  Actual:   without=409; with=200
-  Result:   PASS
-  Evidence: PUT /api/job-cards/{id}
-
-T11 | Delete completed job card
-  Expected: 409 conflict
-  Actual:   status=409; message=Completed or delivered job card cannot be deleted
-  Result:   PASS
-  Evidence: DELETE /api/job-cards/{id}
-
-T12 | Delete records with linked data
-  Expected: all 409 and dependent rows retained
-  Actual:   customer=409; vehicle=409; technician=409
-  Result:   PASS
-  Evidence: DELETE /api/customers|vehicles|technicians
-
-T13 | Persistence across Spring Boot restart
-  Expected: pre-restart E2E job and current job present after restart
-  Actual:   previous=true; current=true
-  Result:   PASS
-  Evidence: GET /api/reports/completed-job-cards after backend restart
-
-T14 | Dashboard and completed report vs database
-  Expected: counts grew; overdue/upcoming/report include expected jobs
-  Actual:   customers 14-&gt;15; vehicles 16-&gt;20; delayed=true; upcoming=true; report=true; statuses=5
-  Result:   PASS
-  Evidence: GET /api/dashboard/* and /api/reports/completed-job-cards
-
-T15 | Phone must be exactly 10 characters
-  Expected: 9/11 rejected; 10 accepted
-  Actual:   short=400; long=400; ten=201
-  Result:   PASS
-  Evidence: POST /api/customers
-
-T16 | Angular UI end-to-end workflow
-  Expected: customer → vehicle → booking → job card → completion → reports via UI
-  Actual:   E2E_SMOKE_OK customer=12 vehicle=13 booking=16 job=11 jobNumber=JC-2026-0010
-  Result:   PASS
-  Evidence: .tools/e2e-smoke.mjs (ignored); docs/evidence/ screenshots
-
-Summary: 15/15 API tests passed; T16 UI workflow passed.</pre></section>
+Command: node scripts/api-tests.mjs verify (after backend restart)
+API test base: http://localhost:8080/api
+Run date: 2026-11-27T11:50:39.151Z
+PASS T13 Persistence after backend restart | expected=completed job present with notes and completedAt after restart | actual=report=200; found=true; notes=true; completedAt=true; customers=4; vehicles=7; bookings=9; jobCards=6
+SUMMARY 1/1 checks passed
+OK   clicked &quot;Save customer&quot;
+OK   customer created via UI (id 7)
+OK   option containing &quot;E2E Driver 0445833&quot; exists in #vehicle-customer
+OK   option containing &quot;Diesel&quot; exists in #vehicle-fuel
+OK   clicked &quot;Save vehicle&quot;
+OK   vehicle created via UI (id 8)
+OK   option containing &quot;E2E-0445833&quot; exists in #booking-vehicle
+OK   option containing &quot;Confirmed&quot; exists in #booking-status
+OK   clicked &quot;Save booking&quot;
+OK   confirmed booking created via UI (id 10)
+OK   booking detail shows confirmed status
+OK   confirmed booking offers job-card conversion
+OK   clicked &quot;Create job card&quot;
+OK   booking preselected by query param
+OK   technician available for assignment
+OK   option containing &quot;Daniel Mwangi&quot; exists in #job-technician
+OK   clicked &quot;Create job card&quot;
+OK   job card created via UI (id 7)
+OK   job card number displayed (JC-2026-0007)
+OK   recalculated labour estimate formatted to 2 decimals
+OK   job card detail shows no raw ISO dates
+OK   clicked &quot;Start work&quot;
+OK   OPEN -&gt; IN_PROGRESS transition persisted
+OK   clicked &quot;Complete work&quot;
+OK   IN_PROGRESS -&gt; COMPLETED transition persisted
+OK   completion notes persisted
+OK   status history retained
+OK   job card survives refresh with status and notes
+OK   completed report lists new job card
+OK   completed report date filters retain new job card
+OK   report money formatting matches detail formatting
+OK   dashboard renders after workflow
+OK   no browser console/page errors (0)
+E2E_SMOKE_OK customer=7 vehicle=8 booking=10 job=7 jobNumber=JC-2026-0007
+</pre></section>
 <section><h2>Postman collection</h2><pre>docs/postman_collection.json
-Import into Postman, set baseUrl=http://localhost:8080/api, then run requests in folder order.</pre></section>
+Vehicle Service Centre Job Card API
+Customers
+Vehicles
+Technicians
+Service bookings
+Job cards
+Dashboard and reports</pre></section>
 </main></body>
 </html>
